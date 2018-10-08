@@ -1,0 +1,7 @@
+/build
+/lib
+/dist
+.vscode
+.DS_Store
+*.log
+/node_modules
