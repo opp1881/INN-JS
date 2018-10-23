@@ -38,6 +38,20 @@ innClient.init({
 });
 ```
 
+When you are testing, that intialization will look like this:
+
+
+```
+import innClient from '@opplysningen1881/inn-js';
+
+innClient.init({
+    appName: 'Your app name', // This is the name you have registered in INN Self Service
+    spaProxyUrl: 'https://inn-qa-spaproxy.opplysningen.no/proxy',
+    ssoLoginUrl: 'https://inn-qa-oidsso.opplysningen.no/oidsso/login'
+});
+```
+
+
 ## Authenticating with Opplysningen INN
 
 ```
