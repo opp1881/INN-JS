@@ -82,8 +82,7 @@ const fetchDeliveryInfo = async () => {
 ```
 
 # Contributing
-
-TODO: Information about how developers can either contact us or suggest improvements to the client.
+If you want to contribute, please submit a pull request for review. If you have questions or suggestions, please submit an issue.
 
 # License
 
