@@ -2,12 +2,6 @@
 
 Library for integrating web applications with Opplysningen INN Single Sign-On solution.
 
-# Demo
-
-A demo with example implementation can be seen at JSFiddle
-
-TODO: Update JSFiddle
-
 # Installation
 
 The INN JS Library is available through NPM. This can be installed using _npm_ or _yarn_
