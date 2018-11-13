@@ -20,29 +20,24 @@ import {
   IDecodedJwt,
   IUserData
 } from './types';
-import logService from './services/log-service';
 
 const userData: IUserData = {
   token: null
 };
 
 const getCrmData = async (): Promise<ICrmDataResponse> => {
-  logService.info(`Fetching crm data ${JSON.stringify(userData)}`);
   if (userData.token) {
     try {
       const decodedJwt = parseJWT(userData.token);
       if (decodedJwt) {
-        logService.info('Fetching crm data from decoded JWT');
         return fetchCrmData(decodedJwt.jti);
       } else {
-        logService.info('Could not decode JWT');
         throw new Error(COULD_NOT_RETRIEVE_CRM_DATA_MESSAGE);
       }
     } catch (err) {
       throw new Error('Error decoding jwt');
     }
   } else {
-    logService.info('Skipping CRM data fetching due to missing token');
     throw new Error('Could not fetch crm data because of missing token');
   }
 };

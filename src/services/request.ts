@@ -7,13 +7,12 @@ import {
   getTicketFromLocalStorage,
   setSecretInLocalStorage
 } from './local-storage';
-import { ISecretResponse, ICrmDataResponse, IUserData } from '../types';
+import { ISecretResponse, ICrmDataResponse } from '../types';
 import {
   COULD_NOT_RETRIEVE_SECRET_FOR_APP_MESSAGE,
   COULD_NOT_GET_USER_TOKEN_MESSAGE,
   COULD_NOT_RETRIEVE_CRM_DATA_MESSAGE
 } from '../constants/error-messages';
-import logService from './log-service';
 
 export const fetchSecretFromAppName = async (): Promise<ISecretResponse> => {
   const { appName, spaProxyUrl } = getConfig();
@@ -50,10 +49,5 @@ export const fetchCrmData = async (
   if (response.status === 200) {
     return response.data;
   }
-  logService.info(
-    `Response status: ${response.status} Response: ${JSON.stringify(
-      response.data
-    )}`
-  );
   throw new Error(COULD_NOT_RETRIEVE_CRM_DATA_MESSAGE);
 };
