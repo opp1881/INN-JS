@@ -1,7 +1,7 @@
 import { getConfig } from './config';
 import { setTicketInLocalStorage } from './local-storage';
 
-export default function getUserTicket() {
+export default function getUserTicket(): Promise<string> {
   const { ssoLoginUrl } = getConfig();
 
   /* Horisontal positioning */
@@ -36,10 +36,10 @@ export default function getUserTicket() {
   return new Promise(resolve => {
     /* eslint-disable prefer-arrow-callback */
     window.addEventListener('message', function eventListener(event) {
-      if (ssoLoginUrl.startsWith(event.origin)) {
+      if (ssoLoginUrl!.startsWith(event.origin)) {
         window.removeEventListener('message', eventListener);
         setTicketInLocalStorage(event.data);
-        popup.close();
+        popup!.close();
         resolve(event.data);
       }
     });

@@ -7,8 +7,15 @@ import {
   getTicketFromLocalStorage,
   setSecretInLocalStorage
 } from './local-storage';
+import { ISecretResponse, ICrmDataResponse, IUserData } from '../types';
+import {
+  COULD_NOT_RETRIEVE_SECRET_FOR_APP_MESSAGE,
+  COULD_NOT_GET_USER_TOKEN_MESSAGE,
+  COULD_NOT_RETRIEVE_CRM_DATA_MESSAGE
+} from '../constants/error-messages';
+import logService from './log-service';
 
-export const fetchSecretFromAppName = async () => {
+export const fetchSecretFromAppName = async (): Promise<ISecretResponse> => {
   const { appName, spaProxyUrl } = getConfig();
   const response = await axios.get(
     `${spaProxyUrl}/load/api/${appName}?ticket=${getTicketFromLocalStorage()}`
@@ -17,12 +24,10 @@ export const fetchSecretFromAppName = async () => {
     setSecretInLocalStorage(response.data.secret);
     return response.data;
   }
-  throw new Error(
-    `Could not get secret from app name. Http status code is ${response.status}`
-  );
+  throw new Error(COULD_NOT_RETRIEVE_SECRET_FOR_APP_MESSAGE);
 };
 
-export const fetchUserToken = async () => {
+export const fetchUserToken = async (): Promise<string> => {
   const { spaProxyUrl } = getConfig();
   const { secret, ticket: newTicket } = await fetchSecretFromAppName();
   const response = await axios.get(
@@ -32,14 +37,12 @@ export const fetchUserToken = async () => {
     clearTicketFromLocalStorage();
     return response.data;
   }
-  throw new Error(
-    `Could not get user token from user ticket. Response status is ${
-      response.status
-    }`
-  );
+  throw new Error(COULD_NOT_GET_USER_TOKEN_MESSAGE);
 };
 
-export const fetchCrmData = async userTokenId => {
+export const fetchCrmData = async (
+  userTokenId: string
+): Promise<ICrmDataResponse> => {
   const { spaProxyUrl } = getConfig();
   const response = await axios.get(
     `${spaProxyUrl}/api/${getSecretFromLocalStorage()}/get_shared_delivery_address/${userTokenId}`
@@ -47,7 +50,10 @@ export const fetchCrmData = async userTokenId => {
   if (response.status === 200) {
     return response.data;
   }
-  throw new Error(
-    `Could not get crm data. Response status is ${response.status}`
+  logService.info(
+    `Response status: ${response.status} Response: ${JSON.stringify(
+      response.data
+    )}`
   );
+  throw new Error(COULD_NOT_RETRIEVE_CRM_DATA_MESSAGE);
 };

@@ -1,5 +1,3 @@
-import { expect } from 'chai';
-
 import {
   clearConfig,
   getConfig,
@@ -10,7 +8,7 @@ import {
 describe('configService', () => {
   describe('getConfig', () => {
     it('should contain no default values', () => {
-      expect(getConfig()).to.deep.equal({});
+      expect(getConfig()).toEqual({});
     });
   });
 
@@ -26,14 +24,14 @@ describe('configService', () => {
         appName: 'some value'
       });
       const newConfig = Object.keys(getConfig());
-      expect(newConfig.length - existingConfigKeys.length).to.equal(1);
+      expect(newConfig.length - existingConfigKeys.length).toEqual(1);
     });
 
     it('should overwrite already existing config keys', () => {
       setConfig({ appName: 'Example app 1' });
-      expect(getConfig().appName).to.equal('Example app 1');
+      expect(getConfig().appName).toEqual('Example app 1');
       setConfig({ appName: 'Example app 2' });
-      expect(getConfig().appName).to.equal('Example app 2');
+      expect(getConfig().appName).toEqual('Example app 2');
     });
   });
 
@@ -46,7 +44,7 @@ describe('configService', () => {
         spaProxyUrl: 'https://proxy.url',
         ssoLoginUrl: 'https://login.url'
       });
-      expect(verifyRequiredConfig()).to.equal(true);
+      expect(verifyRequiredConfig()).toEqual(true);
     });
 
     it('should throw error if configuration of wrong type is provided', () => {
@@ -54,8 +52,8 @@ describe('configService', () => {
         appName: 123,
         spaProxyUrl: 'https://proxy.url',
         ssoLoginUrl: 'https://login.url'
-      });
-      expect(verifyRequiredConfig).to.throw();
+      } as any);
+      expect(verifyRequiredConfig).toThrow();
     });
 
     it('should throw error if missing appName', () => {
@@ -63,7 +61,7 @@ describe('configService', () => {
         spaProxyUrl: 'https://proxy.url',
         ssoLoginUrl: 'https://login.url'
       });
-      expect(verifyRequiredConfig).to.throw();
+      expect(verifyRequiredConfig).toThrow();
     });
 
     it('should throw error if missing spaProxyUrl', () => {
@@ -72,7 +70,7 @@ describe('configService', () => {
         ssoLoginUrl: 'https://login.url'
       });
 
-      expect(verifyRequiredConfig).to.throw();
+      expect(verifyRequiredConfig).toThrow();
     });
 
     it('should throw error if missing ssoLoginUrl', () => {
@@ -81,7 +79,7 @@ describe('configService', () => {
         spaProxyUrl: 'https://proxy.url'
       });
 
-      expect(verifyRequiredConfig).to.throw();
+      expect(verifyRequiredConfig).toThrow();
     });
   });
 });

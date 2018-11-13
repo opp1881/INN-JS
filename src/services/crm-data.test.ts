@@ -1,5 +1,3 @@
-import { expect } from 'chai';
-
 import {
   getContactInfo,
   getDeliveryAddress,
@@ -49,7 +47,7 @@ describe('crmData', () => {
   describe('getContactInfo', () => {
     it('should return name, email address and phone number', () => {
       const contactInfo = getContactInfo(mockData);
-      expect(contactInfo).to.deep.equal({
+      expect(contactInfo).toEqual({
         emailAddress: EMAIL_ADDRESS,
         fullName: FULL_NAME,
         phoneNumber: PHONE_NUMBER
@@ -57,22 +55,22 @@ describe('crmData', () => {
     });
 
     it('should throw error if crmdata is not an object', () => {
-      expect(() => getContactInfo()).to.throw();
+      expect(() => getContactInfo(undefined!)).toThrow();
     });
 
     it('should throw error if deliveryaddress is not an object', () => {
-      expect(() => getContactInfo({})).to.throw();
+      expect(() => getContactInfo({})).toThrow();
     });
 
     it('should throw error if contact is not an object', () => {
-      expect(() => getContactInfo({ deliveryaddress: {} })).to.throw();
+      expect(() => getContactInfo({ deliveryaddress: {} })).toThrow();
     });
   });
 
   describe('getDeliveryAddress', () => {
     it('should return delivery address', () => {
       const deliveryAddress = getDeliveryAddress(mockData);
-      expect(deliveryAddress).to.deep.equal({
+      expect(deliveryAddress).toEqual({
         additionalAddressInfo: ADDITIONAL_ADDRESS_INFO,
         addressLine1: ADDRESS_LINE_1,
         addressLine2: ADDRESS_LINE_2,
@@ -86,22 +84,22 @@ describe('crmData', () => {
     });
 
     it('should throw error if crmdata is not an object', () => {
-      expect(() => getDeliveryAddress()).to.throw();
+      expect(() => getDeliveryAddress(undefined!)).toThrow();
     });
 
     it('should throw error if deliveryaddress is not an object', () => {
-      expect(() => getDeliveryAddress({})).to.throw();
+      expect(() => getDeliveryAddress({})).toThrow();
     });
 
     it('should throw error if deliveryinformation is not an object', () => {
-      expect(() => getDeliveryAddress({ deliveryaddress: {} })).to.throw();
+      expect(() => getDeliveryAddress({ deliveryaddress: {} })).toThrow();
     });
   });
 
   describe('getDeliveryInfo', () => {
     it('should return deliver info', () => {
       const deliveryInfo = getDeliveryInfo(mockData);
-      expect(deliveryInfo).to.deep.equal({
+      expect(deliveryInfo).toEqual({
         contactInfo: {
           emailAddress: EMAIL_ADDRESS,
           fullName: FULL_NAME,

@@ -5,3 +5,4 @@
 .DS_Store
 *.log
 /node_modules
+.rpt2_cache

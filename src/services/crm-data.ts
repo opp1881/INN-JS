@@ -1,6 +1,19 @@
-const isObject = item => typeof item === 'object';
+import {
+  IContactInfo,
+  ICrmDataResponse,
+  IDeliveryAddress,
+  IDeliveryAddressPart,
+  IDeliveryInfoPart,
+  ICrmData
+} from '../types';
+import {
+  COULD_NOT_RETRIEVE_CONTACT_INFORMATION_MESSAGE,
+  COULD_NOT_RETRIEVE_ADDRESS_MESSAGE
+} from '../constants/error-messages';
 
-const extractContactInfo = crmData => {
+const isObject = (item: any): boolean => typeof item === 'object';
+
+const extractContactInfo = (crmData: ICrmDataResponse): IContactInfo => {
   const { contact } = crmData.deliveryaddress;
   return {
     emailAddress: contact.email,
@@ -9,7 +22,9 @@ const extractContactInfo = crmData => {
   };
 };
 
-const extractDeliveryAddress = crmData => {
+const extractDeliveryAddress = (
+  crmData: ICrmDataResponse
+): IDeliveryAddressPart => {
   const { deliveryaddress } = crmData;
   return {
     addressLine1: deliveryaddress.addressLine1,
@@ -21,7 +36,7 @@ const extractDeliveryAddress = crmData => {
   };
 };
 
-const extractDeliveryInfo = crmData => {
+const extractDeliveryInfo = (crmData: ICrmDataResponse): IDeliveryInfoPart => {
   const { deliveryinformation } = crmData.deliveryaddress;
   return {
     additionalAddressInfo: deliveryinformation.additionalAddressInfo,
@@ -30,7 +45,7 @@ const extractDeliveryInfo = crmData => {
   };
 };
 
-export const getContactInfo = crmData => {
+export const getContactInfo = (crmData: ICrmDataResponse): IContactInfo => {
   if (
     isObject(crmData) &&
     isObject(crmData.deliveryaddress) &&
@@ -38,10 +53,12 @@ export const getContactInfo = crmData => {
   ) {
     return extractContactInfo(crmData);
   }
-  throw new Error('Could not retrieve contact information from CRM data');
+  throw new Error(COULD_NOT_RETRIEVE_CONTACT_INFORMATION_MESSAGE);
 };
 
-export const getDeliveryAddress = crmData => {
+export const getDeliveryAddress = (
+  crmData: ICrmDataResponse
+): IDeliveryAddress => {
   if (
     isObject(crmData) &&
     isObject(crmData.deliveryaddress) &&
@@ -52,10 +69,10 @@ export const getDeliveryAddress = crmData => {
       ...extractDeliveryInfo(crmData)
     };
   }
-  throw new Error('Could not retrieve address from CRM data');
+  throw new Error(COULD_NOT_RETRIEVE_ADDRESS_MESSAGE);
 };
 
-export const getDeliveryInfo = crmData => ({
+export const getDeliveryInfo = (crmData: ICrmDataResponse): ICrmData => ({
   contactInfo: getContactInfo(crmData),
   deliveryAddress: getDeliveryAddress(crmData)
 });

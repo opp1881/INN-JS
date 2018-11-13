@@ -2,33 +2,26 @@
   "name": "@opplysningen1881/inn-js",
   "version": "0.0.10",
   "main": "lib/inn-js.js",
+  "source": "src/index.ts",
   "license": "Apache-2.0",
   "scripts": {
     "build": "rimraf lib && microbundle -o lib -f cjs --name inn-js --sourcemap false",
-    "test": "mocha src/**/*.test.js --require babel-core/register",
-    "lint": "eslint src"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:ci": "jest --maxWorkers=4",
+    "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
   "dependencies": {
-    "axios": "0.18.0",
-    "jwt-decode": "2.2.0"
+    "axios": "0.18.0"
   },
   "devDependencies": {
-    "babel-core": "6.26.3",
-    "babel-eslint": "8.2.6",
-    "babel-loader": "7.1.5",
-    "babel-plugin-transform-object-rest-spread": "6.26.0",
-    "babel-plugin-transform-runtime": "6.23.0",
-    "babel-preset-env": "1.7.0",
-    "chai": "4.1.2",
-    "eslint": "5.3.0",
-    "eslint-config-airbnb-base": "13.1.0",
-    "eslint-config-prettier": "2.9.0",
-    "eslint-plugin-class-property": "1.1.0",
-    "eslint-plugin-import": "2.14.0",
-    "eslint-plugin-mocha": "5.1.0",
+    "@types/jest": "23.3.9",
+    "jest": "23.6.0",
     "microbundle": "0.6.0",
-    "mocha": "5.2.0",
     "prettier": "1.14.2",
-    "rimraf": "2.6.2"
+    "rimraf": "2.6.2",
+    "ts-jest": "23.10.4",
+    "tslint": "5.11.0",
+    "tslint-config-prettier": "1.15.0"
   }
 }
