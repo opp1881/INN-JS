@@ -1,33 +1,53 @@
 import { IConfig } from '../types';
-import { MISSING_CONFIGURATION_MESSAGE } from '../constants/error-messages';
+import { RequiredOptions, Mode, ProxyUrl } from '../enums';
 
-const REQUIRED_OPTIONS = ['appName', 'spaProxyUrl', 'ssoLoginUrl'];
+const REQUIRED_OPTIONS = [RequiredOptions.APP_NAME, RequiredOptions.MODE];
 
-let config = {};
-
-export const setConfig = (newConfig: IConfig): void => {
-  config = {
-    ...config,
-    ...newConfig
-  };
-};
-
-export const getConfig = (): IConfig => config;
-
-export const clearConfig = (): void => {
-  config = {};
-};
+let config;
 
 const isNonEmptyString = (testString: string): boolean =>
   typeof testString === 'string' && testString.length > 0;
 
-const verifyPresence = (configKey: string): boolean => {
-  const configValue = getConfig()[configKey];
-  if (isNonEmptyString(configValue)) {
-    return true;
-  }
-  throw new Error(MISSING_CONFIGURATION_MESSAGE);
+const isNonEmptyObject = (obj): boolean =>
+  typeof obj === 'object' && Object.keys(obj).length > 0;
+
+const verifyPresence = (newConfig: IConfig, option: string): boolean =>
+  isNonEmptyString(newConfig[option]);
+
+export const verifyRequiredConfig = (newConfig: IConfig = config): boolean =>
+  isNonEmptyObject(newConfig) &&
+  REQUIRED_OPTIONS.every(
+    (option: string): boolean => verifyPresence(newConfig, option)
+  );
+
+export const getConfig = (): IConfig => config;
+
+export const clearConfig = (): void => {
+  config = undefined;
 };
 
-export const verifyRequiredConfig = (): boolean =>
-  REQUIRED_OPTIONS.every(verifyPresence);
+export const getMode = (): Mode => config.mode;
+
+export const getAppName = (): string => config.appName;
+
+export const getProxyUrl = (): string => {
+  switch (getMode()) {
+    case Mode.DEV:
+      return ProxyUrl.DEV;
+    case Mode.PROD:
+      return ProxyUrl.PROD;
+    default:
+      throw new Error('Running in invalid mode');
+  }
+};
+
+export const initConfig = (newConfig: IConfig): void => {
+  if (verifyRequiredConfig(newConfig)) {
+    config = {
+      appName: newConfig.appName,
+      mode: newConfig.mode.toLowerCase()
+    };
+  } else {
+    throw new Error('Required config is not present');
+  }
+};
