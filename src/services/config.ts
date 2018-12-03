@@ -2,7 +2,7 @@ import { IConfig } from '../types';
 import { Mode, Flow, ProxyUrl } from '../enums';
 import { verifyRequiredConfig } from './validate-config';
 
-const defaultConfig = {
+const DEFAULT_CONFIG = {
   requireConsent: false
 };
 
@@ -42,7 +42,7 @@ export const initConfig = (newConfig: IConfig = config): void => {
     flow: newConfig.flow,
     requireConsent:
       newConfig.requireConsent === undefined
-        ? defaultConfig.requireConsent
+        ? DEFAULT_CONFIG.requireConsent
         : newConfig.requireConsent
   };
 };
