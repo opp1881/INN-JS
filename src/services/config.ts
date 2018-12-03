@@ -1,24 +1,12 @@
 import { IConfig } from '../types';
-import { RequiredOptions, Mode, ProxyUrl } from '../enums';
+import { Mode, Flow, ProxyUrl } from '../enums';
+import { verifyRequiredConfig } from './validate-config';
 
-const REQUIRED_OPTIONS = [RequiredOptions.APP_NAME, RequiredOptions.MODE];
+const defaultConfig = {
+  requireConsent: false
+}
 
 let config;
-
-const isNonEmptyString = (testString: string): boolean =>
-  typeof testString === 'string' && testString.length > 0;
-
-const isNonEmptyObject = (obj): boolean =>
-  typeof obj === 'object' && Object.keys(obj).length > 0;
-
-const verifyPresence = (newConfig: IConfig, option: string): boolean =>
-  isNonEmptyString(newConfig[option]);
-
-export const verifyRequiredConfig = (newConfig: IConfig = config): boolean =>
-  isNonEmptyObject(newConfig) &&
-  REQUIRED_OPTIONS.every(
-    (option: string): boolean => verifyPresence(newConfig, option)
-  );
 
 export const getConfig = (): IConfig => config;
 
@@ -30,24 +18,27 @@ export const getMode = (): Mode => config.mode;
 
 export const getAppName = (): string => config.appName;
 
-export const getProxyUrl = (): string => {
-  switch (getMode()) {
-    case Mode.DEV:
-      return ProxyUrl.DEV;
-    case Mode.PROD:
-      return ProxyUrl.PROD;
-    default:
-      throw new Error('Running in invalid mode');
-  }
-};
+export const getProxyUrl = (): string => (getMode() === Mode.DEV) ? ProxyUrl.DEV : ProxyUrl.PROD;
 
-export const initConfig = (newConfig: IConfig): void => {
-  if (verifyRequiredConfig(newConfig)) {
-    config = {
-      appName: newConfig.appName,
-      mode: newConfig.mode.toLowerCase()
-    };
-  } else {
-    throw new Error('Required config is not present');
+export const getRequireConsent = (): boolean => config.requireConsent;
+
+export const getFlow = (): Flow => config.flow;
+
+export const initConfig = (newConfig: IConfig = config): void => {
+  const errors = verifyRequiredConfig(newConfig)
+    .filter(result => !result.valid)
+    .map(result => result.text);
+  
+  if (errors.length > 0) {
+    throw new Error('Required config is not correct: ' + errors.map(error => `\n${error}`));
   }
+
+  config = {
+    appName: newConfig.appName,
+    mode: newConfig.mode.toLowerCase(),
+    flow: newConfig.flow,
+    requireConsent: newConfig.requireConsent === undefined
+      ? defaultConfig.requireConsent 
+      : newConfig.requireConsent
+  };
 };

@@ -3,14 +3,20 @@ import {
   getMode,
   getAppName,
   getProxyUrl,
-  getConfig
+  getConfig,
+  getFlow,
+  getRequireConsent
 } from './config';
-import { Mode, ProxyUrl } from '../enums';
+import { Mode, ProxyUrl, Flow } from '../enums';
 import { IConfig } from '../types';
 
 const APP_NAME = 'example-app';
-const MODE = 'development';
-const VALID_CONFIG = { appName: APP_NAME, mode: MODE };
+const VALID_CONFIG = { 
+  appName: APP_NAME, 
+  mode: Mode.DEV, 
+  flow: Flow.SECRET_PROVISIONED, 
+  requireConsent: false
+};
 
 describe('configService', () => {
   describe('initConfig', () => {
@@ -59,9 +65,31 @@ describe('configService', () => {
     it('should return PROD url when in PROD mode', () => {
       initConfig({
         ...VALID_CONFIG,
-        mode: 'production'
+        mode: Mode.PROD
       });
       expect(getProxyUrl()).toBe(ProxyUrl.PROD);
     });
   });
+
+  describe('getFlow', () => {
+    it('should return flow application is using', () => {
+      initConfig(VALID_CONFIG);
+      expect(getFlow()).toBe(Flow.SECRET_PROVISIONED);
+    });
+  });
+
+  describe('getRequireConsent', () => {
+    it('should return configured consent', () => {
+      initConfig({
+        ...VALID_CONFIG,
+        requireConsent: true
+      });
+      expect(getRequireConsent()).toBe(true);
+    })
+
+    it('should return default consent', () => {
+      initConfig(VALID_CONFIG);
+      expect(getRequireConsent()).toBe(false);
+    })
+  })
 });

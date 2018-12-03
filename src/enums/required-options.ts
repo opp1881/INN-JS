@@ -1,4 +1,5 @@
 export enum RequiredOptions {
   APP_NAME = 'appName',
-  MODE = 'mode'
+  MODE = 'mode',
+  FLOW = 'flow'
 }

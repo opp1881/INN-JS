@@ -1,6 +1,6 @@
 import 'whatwg-fetch';
 
-import { initConfig, verifyRequiredConfig } from './services/config';
+import { initConfig } from './services/config';
 import {
   getContactInfo as getContactInfoFromCrmData,
   getDeliveryAddress as getDeliveryAddressFromCrmData,
@@ -43,7 +43,7 @@ const getCrmData = async (): Promise<ICrmDataResponse> => {
 
 const isAuthenticated = (): boolean => userData.token !== null;
 
-const isReady = (): boolean => isAuthenticated() && verifyRequiredConfig();
+const isReady = (): boolean => isAuthenticated();
 
 export const authenticate = async (): Promise<string | null> => {
   try {
