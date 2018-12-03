@@ -1,4 +1,4 @@
-import { Flow, Mode } from "../enums";
+import { Flow, Mode } from '../enums';
 
 export interface IConfig {
   appName: string;

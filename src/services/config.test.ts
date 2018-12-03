@@ -11,10 +11,10 @@ import { Mode, ProxyUrl, Flow } from '../enums';
 import { IConfig } from '../types';
 
 const APP_NAME = 'example-app';
-const VALID_CONFIG = { 
-  appName: APP_NAME, 
-  mode: Mode.DEV, 
-  flow: Flow.SECRET_PROVISIONED, 
+const VALID_CONFIG = {
+  appName: APP_NAME,
+  mode: Mode.DEV,
+  flow: Flow.SECRET_PROVISIONED,
   requireConsent: false
 };
 
@@ -85,11 +85,11 @@ describe('configService', () => {
         requireConsent: true
       });
       expect(getRequireConsent()).toBe(true);
-    })
+    });
 
     it('should return default consent', () => {
       initConfig(VALID_CONFIG);
       expect(getRequireConsent()).toBe(false);
-    })
-  })
+    });
+  });
 });

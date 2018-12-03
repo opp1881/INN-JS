@@ -1,4 +1,4 @@
 export enum Flow {
-  SECRET_PROVISIONED = "secret-provisioned",
-  SECRET_UNKNOWN = "secret-unknown"
+  SECRET_PROVISIONED = 'secret-provisioned',
+  SECRET_UNKNOWN = 'secret-unknown'
 }

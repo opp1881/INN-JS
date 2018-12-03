@@ -1,9 +1,10 @@
-import {getConfig, getProxyUrl, getAppName} from './config';
-import {getQueryParamValue} from '../utils/query';
-import {setTicketInLocalStorage} from '../utils/local-storage';
-import {Flow} from '../enums';
+import { getConfig, getProxyUrl, getAppName } from './config';
+import { getQueryParamValue } from '../utils/query';
+import { setTicketInLocalStorage } from '../utils/local-storage';
+import { Flow } from '../enums';
 
-const isLoginNotInProgress = (popupWindow) :boolean => !popupWindow || popupWindow.closed || popupWindow.closed === undefined;
+const isLoginNotInProgress = (popupWindow): boolean =>
+  !popupWindow || popupWindow.closed || popupWindow.closed === undefined;
 
 /* Horisontal positioning */
 const popupWidth = 480;
@@ -25,30 +26,44 @@ const windowFeatures = `left=${popupPosX},
                           titlebar=no`;
 
 function openPopup(path: string, requireConsent: boolean): Window | null {
-  return window.open(`${path}?redirectURI=${window.origin}&UserCheckout=${requireConsent}`, 
-    'innspaclient', 
-    windowFeatures);
+  return window.open(
+    `${path}?redirectURI=${window.origin}&UserCheckout=${requireConsent}`,
+    'innspaclient',
+    windowFeatures
+  );
 }
 
 function executeSecretProvisionedFlow(requireConsent: boolean): Promise<any> {
   const code = getQueryParamValue(window.location.search, 'code');
   if (!code) {
-    throw new Error("Missing 'code' query param. This is required for the secret-provisioned flow");
+    throw new Error(
+      "Missing 'code' query param. This is required for the secret-provisioned flow"
+    );
   }
-  const popup = openPopup(`${getProxyUrl()}/api/${code}/ssologin/${getAppName()}`, requireConsent);
-  const ticketQueryParamKey = "userticket"; // This flow redirects from SSOLWA - will return ticket as 'userticket'
+  const popup = openPopup(
+    `${getProxyUrl()}/api/${code}/ssologin/${getAppName()}`,
+    requireConsent
+  );
+  const ticketQueryParamKey = 'userticket'; // This flow redirects from SSOLWA - will return ticket as 'userticket'
 
   return pollForLoginResult(popup, ticketQueryParamKey, code);
 }
 
 function executeSecretUnknownFlow(requireConsent: boolean): Promise<any> {
-  const popup = openPopup(`${getProxyUrl()}/load/ssologin/${getAppName()}`, requireConsent);
-  const ticketQueryParamKey = "ticket"; // This flow redirects from SPAProxy - will return ticket as 'ticket'
+  const popup = openPopup(
+    `${getProxyUrl()}/load/ssologin/${getAppName()}`,
+    requireConsent
+  );
+  const ticketQueryParamKey = 'ticket'; // This flow redirects from SPAProxy - will return ticket as 'ticket'
 
   return pollForLoginResult(popup, ticketQueryParamKey, null);
 }
 
-function pollForLoginResult(popup: Window | null, ticketParam: string, code: string | null): Promise<any> {
+function pollForLoginResult(
+  popup: Window | null,
+  ticketParam: string,
+  code: string | null
+): Promise<any> {
   return new Promise((resolve, reject) => {
     const pollTimer = window.setInterval(() => {
       if (isLoginNotInProgress(popup)) {
@@ -85,7 +100,7 @@ function pollForLoginResult(popup: Window | null, ticketParam: string, code: str
   });
 }
 
-export default function getUserTicket() :Promise<any> {
+export default function getUserTicket(): Promise<any> {
   const config = getConfig();
   const flow = config.flow;
   const requireConsent = config.requireConsent;
