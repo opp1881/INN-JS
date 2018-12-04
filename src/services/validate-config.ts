@@ -8,7 +8,7 @@ const optionToEnum = {
   flow: Flow
 };
 
-interface ValidationResult {
+interface IValidationResult {
   valid: boolean;
   text?: string;
 }
@@ -23,7 +23,7 @@ function createValidationResult(valid: boolean, text?: string) {
 const isValidOption = (
   config: IConfig,
   option: RequiredOptions
-): ValidationResult => {
+): IValidationResult => {
   if (!Object.values(optionToEnum[option]).includes(config[option])) {
     return createValidationResult(
       false,
@@ -37,7 +37,7 @@ const isValidOption = (
 const verifyPresence = (
   newConfig: IConfig,
   option: string
-): ValidationResult => {
+): IValidationResult => {
   const valueToTest = newConfig[option];
   if (!(typeof valueToTest === 'string' && valueToTest.length > 0)) {
     return createValidationResult(
@@ -50,13 +50,13 @@ const verifyPresence = (
 
 export const verifyRequiredConfig = (
   newConfig: IConfig
-): ValidationResult[] => {
+): IValidationResult[] => {
   const requiredTypeResult = REQUIRED_TYPE_OPTIONS.map(
-    (option: RequiredOptions): ValidationResult =>
+    (option: RequiredOptions): IValidationResult =>
       isValidOption(newConfig, option)
   );
   const requiredTextResult = REQUIRED_TEXT_OPTIONS.map(
-    (option: RequiredOptions): ValidationResult =>
+    (option: RequiredOptions): IValidationResult =>
       verifyPresence(newConfig, option)
   );
   return requiredTypeResult.concat(requiredTextResult);
