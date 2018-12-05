@@ -9,6 +9,7 @@ import {
 import { isTicketInLocalStorage } from './utils/local-storage';
 import { fetchCrmData, fetchUserToken } from './services/request';
 import getUserTicket from './services/popup';
+import { addButtonTo } from './components/Button';
 import parseJWT from './utils/jwt';
 import { COULD_NOT_RETRIEVE_CRM_DATA_MESSAGE } from './constants/error-messages';
 import {
@@ -23,6 +24,10 @@ import {
 const userData: IUserData = {
   token: null
 };
+
+/* tslint:disable */
+function noop() {}
+/* tslint:enable */
 
 const getCrmData = async (): Promise<ICrmDataResponse> => {
   if (userData.token) {
@@ -75,3 +80,37 @@ export const getToken = (): string | null =>
 
 export const getUser = (): IDecodedJwt | null =>
   isReady() ? parseJWT(userData.token!) : null;
+
+export const addLoginButtonTo = (id: string, callback = noop): void => {
+  const parent = document.getElementById(id);
+
+  if (parent) {
+    const button = addButtonTo(parent, {
+      buttonText: 'Logg inn',
+      helpText: 'Bruk innlogging fra INN'
+    });
+
+    button.addEventListener('click', async () => {
+      await authenticate();
+      callback();
+    });
+  }
+};
+
+export const addCheckoutButtonTo = (id: string, callback = noop): void => {
+  const parent = document.getElementById(id);
+
+  if (parent) {
+    const button = addButtonTo(parent, {
+      buttonText: 'Hent adresse',
+      helpText: 'Henter adresseinformasjon fra INN',
+      profileLink: 'https://inn-qa-oidsso.opplysningen.no/oidsso/welcome',
+      profileLinkText: 'Rediger profilen din på INN'
+    });
+
+    button.addEventListener('click', async () => {
+      await authenticate();
+      callback();
+    });
+  }
+};
