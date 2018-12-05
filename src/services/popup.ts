@@ -101,9 +101,7 @@ function pollForLoginResult(
 }
 
 export default function getUserTicket(): Promise<any> {
-  const config = getConfig();
-  const flow = config.flow;
-  const requireConsent = config.requireConsent;
+  const { flow, requireConsent } = getConfig();
 
   if (flow === Flow.SECRET_PROVISIONED) {
     return executeSecretProvisionedFlow(requireConsent);
