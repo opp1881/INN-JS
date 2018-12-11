@@ -1,7 +1,8 @@
 import { getConfig, getProxyUrl, getAppName } from './config';
 import { getQueryParamValue } from '../utils/query';
-import { setTicketInLocalStorage } from '../utils/local-storage';
+import { setSecretInLocalStorage } from '../utils/local-storage';
 import { Flow } from '../enums';
+import { IPopupResult } from '../types';
 
 const isLoginNotInProgress = (popupWindow): boolean =>
   !popupWindow || popupWindow.closed || popupWindow.closed === undefined;
@@ -33,7 +34,9 @@ function openPopup(path: string, requireConsent: boolean): Window | null {
   );
 }
 
-function executeSecretProvisionedFlow(requireConsent: boolean): Promise<any> {
+function executeSecretProvisionedFlow(
+  requireConsent: boolean
+): Promise<IPopupResult> {
   const code = getQueryParamValue(window.location.search, 'code');
   if (!code) {
     throw new Error(
@@ -49,7 +52,9 @@ function executeSecretProvisionedFlow(requireConsent: boolean): Promise<any> {
   return pollForLoginResult(popup, ticketQueryParamKey, code);
 }
 
-function executeSecretUnknownFlow(requireConsent: boolean): Promise<any> {
+function executeSecretUnknownFlow(
+  requireConsent: boolean
+): Promise<IPopupResult> {
   const popup = openPopup(
     `${getProxyUrl()}/load/ssologin/${getAppName()}`,
     requireConsent
@@ -63,7 +68,7 @@ function pollForLoginResult(
   popup: Window | null,
   ticketParam: string,
   code: string | null
-): Promise<any> {
+): Promise<IPopupResult> {
   return new Promise((resolve, reject) => {
     const pollTimer = window.setInterval(() => {
       if (isLoginNotInProgress(popup)) {
@@ -83,7 +88,7 @@ function pollForLoginResult(
                 code = getQueryParamValue(search, 'code');
               }
               if (userticket && code) {
-                setTicketInLocalStorage(userticket);
+                setSecretInLocalStorage(code);
                 resolve({ userticket, code });
               } else {
                 reject('Could not find required query params');
@@ -100,7 +105,7 @@ function pollForLoginResult(
   });
 }
 
-export default function getUserTicket(): Promise<any> {
+export default function getUserTicket(): Promise<IPopupResult> {
   const { flow, requireConsent } = getConfig();
 
   if (flow === Flow.SECRET_PROVISIONED) {

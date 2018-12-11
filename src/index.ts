@@ -1,13 +1,20 @@
 import 'whatwg-fetch';
 
-import { initConfig } from './services/config';
+import { initConfig, getFlow } from './services/config';
 import {
   getContactInfo as getContactInfoFromCrmData,
   getDeliveryAddress as getDeliveryAddressFromCrmData,
   getDeliveryInfo as getDeliveryInfoFromCrmData
 } from './services/crm-data';
-import { isTicketInLocalStorage } from './utils/local-storage';
-import { fetchCrmData, fetchUserToken } from './services/request';
+import {
+  isTokenInLocalStorage,
+  getTokenFromLocalStorage
+} from './utils/local-storage';
+import {
+  fetchCrmData,
+  fetchUserToken,
+  old_fetchUserToken
+} from './services/request';
 import getUserTicket from './services/popup';
 import { addButtonTo } from './components/Button';
 import parseJWT from './utils/jwt';
@@ -20,6 +27,7 @@ import {
   IDecodedJwt,
   IUserData
 } from './types';
+import { Flow } from './enums';
 
 const userData: IUserData = {
   token: null
@@ -50,12 +58,44 @@ const isAuthenticated = (): boolean => userData.token !== null;
 
 const isReady = (): boolean => isAuthenticated();
 
+/**
+ * Secret unknown flow still uses an old deprecated flow.
+ * TODO: This method along with authenticateOld() should be removed when ready and
+ * authenticateNew() exported instead as authenticate()
+ */
 export const authenticate = async (): Promise<string | null> => {
+  if (getFlow() === Flow.SECRET_UNKNOWN) {
+    return authenticateOld();
+  } else {
+    return authenticateNew();
+  }
+};
+
+// TODO: Deprecated. Connected to old flow, remove when ready
+const authenticateOld = async (): Promise<string | null> => {
+  if (isTokenInLocalStorage()) {
+    userData.token = getTokenFromLocalStorage();
+    return userData.token;
+  }
+
   try {
-    if (!isTicketInLocalStorage()) {
-      await getUserTicket();
-    }
-    userData.token = await fetchUserToken();
+    const { userticket } = await getUserTicket();
+    userData.token = await old_fetchUserToken(userticket);
+    return userData.token;
+  } catch (err) {
+    throw new Error(`Could not authenticate: ${err}`);
+  }
+};
+
+const authenticateNew = async (): Promise<string | null> => {
+  if (isTokenInLocalStorage()) {
+    userData.token = getTokenFromLocalStorage();
+    return userData.token;
+  }
+
+  try {
+    const { userticket } = await getUserTicket();
+    userData.token = await fetchUserToken(userticket);
     return userData.token;
   } catch (err) {
     throw new Error(`Could not authenticate: ${err}`);
@@ -64,6 +104,10 @@ export const authenticate = async (): Promise<string | null> => {
 
 export const init = (options): void => {
   initConfig(options);
+
+  // If the token exists in local storage, the user is authenticated and can get token and
+  // perform authenticated actions right away
+  userData.token = getTokenFromLocalStorage();
 };
 
 export const getContactInfo = async (): Promise<IContactInfo | null> =>
