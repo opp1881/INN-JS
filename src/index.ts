@@ -54,7 +54,7 @@ const getCrmData = async (): Promise<ICrmDataResponse> => {
   }
 };
 
-const isAuthenticated = (): boolean => userData.token !== null;
+export const isAuthenticated = (): boolean => userData.token !== null;
 
 const isReady = (): boolean => isAuthenticated();
 
