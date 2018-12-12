@@ -2,6 +2,8 @@
 
 Library for integrating web applications with Opplysningen INN Single Sign-On solution.
 
+## **Note that this library is still in an unstable state and the API is subject to change**
+
 # Installation
 
 The INN JS Library is available through NPM. This can be installed using _npm_ or _yarn_
@@ -34,7 +36,6 @@ innClient.init({
 
 When you are testing, that intialization will look like this:
 
-
 ```
 import innClient from '@opplysningen1881/inn-js';
 
@@ -44,7 +45,6 @@ innClient.init({
     ssoLoginUrl: 'https://inn-qa-oidsso.opplysningen.no/oidsso/login'
 });
 ```
-
 
 ## Authenticating with Opplysningen INN
 
@@ -76,6 +76,7 @@ const fetchDeliveryInfo = async () => {
 ```
 
 # Contributing
+
 If you want to contribute, please submit a pull request for review. If you have questions or suggestions, please submit an issue.
 
 # License
