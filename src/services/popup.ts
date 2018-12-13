@@ -35,16 +35,20 @@ function openPopup(path: string, requireConsent: boolean): Window | null {
 }
 
 function executeSecretProvisionedFlow(
-  requireConsent: boolean
+  requireConsent: boolean,
+  secret: string | null
 ): Promise<IPopupResult> {
-  const code = getQueryParamValue(window.location.search, 'code');
+  let code = secret;
+  if (!code) {
+    code = getQueryParamValue(window.location.search, 'code');
+  }
   if (!code) {
     throw new Error(
       "Missing 'code' query param. This is required for the secret-provisioned flow"
     );
   }
   const popup = openPopup(
-    `${getProxyUrl()}/api/${code}/ssologin/${getAppName()}`,
+    `${getProxyUrl()}/api/${secret}/ssologin/${getAppName()}`,
     requireConsent
   );
   const ticketQueryParamKey = 'userticket'; // This flow redirects from SSOLWA - will return ticket as 'userticket'
@@ -88,7 +92,6 @@ function pollForLoginResult(
                 code = getQueryParamValue(search, 'code');
               }
               if (userticket && code) {
-                setSecretInLocalStorage(code);
                 resolve({ userticket, code });
               } else {
                 reject('Could not find required query params');
@@ -105,11 +108,13 @@ function pollForLoginResult(
   });
 }
 
-export default function getUserTicket(): Promise<IPopupResult> {
+export default function getUserTicket(
+  secret: string | null
+): Promise<IPopupResult> {
   const { flow, requireConsent } = getConfig();
 
   if (flow === Flow.SECRET_PROVISIONED) {
-    return executeSecretProvisionedFlow(requireConsent);
+    return executeSecretProvisionedFlow(requireConsent, secret);
   } else {
     return executeSecretUnknownFlow(requireConsent);
   }

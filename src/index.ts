@@ -8,12 +8,14 @@ import {
 } from './services/crm-data';
 import {
   isTokenInLocalStorage,
-  getTokenFromLocalStorage
+  getTokenFromLocalStorage,
+  getSecretFromLocalStorage,
+  setSecretInLocalStorage
 } from './utils/local-storage';
 import {
   fetchCrmData,
   fetchUserToken,
-  old_fetchUserToken
+  oldFetchUserToken
 } from './services/request';
 import getUserTicket from './services/popup';
 import { addButtonTo } from './components/Button';
@@ -79,8 +81,9 @@ const authenticateOld = async (): Promise<string | null> => {
   }
 
   try {
-    const { userticket } = await getUserTicket();
-    userData.token = await old_fetchUserToken(userticket);
+    const { userticket, code } = await getUserTicket(null);
+    setSecretInLocalStorage(code);
+    userData.token = await oldFetchUserToken(userticket);
     return userData.token;
   } catch (err) {
     throw new Error(`Could not authenticate: ${err}`);
@@ -94,8 +97,12 @@ const authenticateNew = async (): Promise<string | null> => {
   }
 
   try {
-    const { userticket } = await getUserTicket();
-    userData.token = await fetchUserToken(userticket);
+    const secret = getSecretFromLocalStorage();
+    const { userticket, code } = await getUserTicket(secret);
+    userData.token = await fetchUserToken(userticket, code);
+    // Wait to save secret to local storage until fetchUserToken() has successfully completed
+    // and thus the secret has been confirmed to be correct
+    setSecretInLocalStorage(code);
     return userData.token;
   } catch (err) {
     throw new Error(`Could not authenticate: ${err}`);

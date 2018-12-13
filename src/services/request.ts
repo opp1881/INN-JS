@@ -9,7 +9,7 @@ import { ISecretResponse, ICrmDataResponse } from '../types';
 import { getAsJson, getAsText } from './fetch';
 
 // TODO: Connected to old flow. Remove when ready
-async function old_fetchSecretFromAppName(
+async function oldFetchSecretFromAppName(
   userticket: string
 ): Promise<ISecretResponse> {
   const { appName } = getConfig();
@@ -21,8 +21,8 @@ async function old_fetchSecretFromAppName(
 }
 
 // TODO: Connected to old flow. Remove when ready
-export async function old_fetchUserToken(userticket: string): Promise<string> {
-  const { secret, ticket: newTicket } = await old_fetchSecretFromAppName(
+export async function oldFetchUserToken(userticket: string): Promise<string> {
+  const { secret, ticket: newTicket } = await oldFetchSecretFromAppName(
     userticket
   );
 
@@ -34,9 +34,10 @@ export async function old_fetchUserToken(userticket: string): Promise<string> {
   return userToken;
 }
 
-export async function fetchUserToken(userTicket: string): Promise<string> {
-  const secret = getSecretFromLocalStorage();
-
+export async function fetchUserToken(
+  userTicket: string,
+  secret: string
+): Promise<string> {
   const userToken = await getAsText(
     `/api/${secret}/get_token_from_ticket/${userTicket}`
   );
