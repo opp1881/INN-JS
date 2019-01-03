@@ -1,11 +1,10 @@
 import { IConfig } from '../types';
-import { RequiredOptions, Mode, Flow } from '../enums';
+import { RequiredOptions, Mode } from '../enums';
 
 const REQUIRED_TEXT_OPTIONS = [RequiredOptions.APP_NAME];
-const REQUIRED_TYPE_OPTIONS = [RequiredOptions.MODE, RequiredOptions.FLOW];
+const REQUIRED_TYPE_OPTIONS = [RequiredOptions.MODE];
 const optionToEnum = {
-  mode: Mode,
-  flow: Flow
+  mode: Mode
 };
 
 interface IValidationResult {

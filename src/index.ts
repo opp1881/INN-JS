@@ -1,52 +1,39 @@
 import 'whatwg-fetch';
 
-import { initConfig, getFlow } from './services/config';
+import { initConfig } from './services/config';
 import {
   getContactInfo as getContactInfoFromCrmData,
-  getDeliveryAddress as getDeliveryAddressFromCrmData,
   getDeliveryInfo as getDeliveryInfoFromCrmData
 } from './services/crm-data';
 import {
   isTokenInLocalStorage,
   getTokenFromLocalStorage,
-  getSecretFromLocalStorage,
-  setSecretInLocalStorage
+  setSecretInLocalStorage,
+  setTokenInLocalStorage
 } from './utils/local-storage';
 import {
   fetchCrmData,
-  fetchUserToken,
-  oldFetchUserToken
+  initializeSession,
+  exchangeForToken
 } from './services/request';
-import getUserTicket from './services/popup';
+import login from './services/popup';
 import { addButtonTo } from './components/Button';
 import parseJWT from './utils/jwt';
-import { COULD_NOT_RETRIEVE_CRM_DATA_MESSAGE } from './constants/error-messages';
-import {
-  ICrmDataResponse,
-  IContactInfo,
-  IDeliveryAddressPart,
-  ICrmData,
-  IDecodedJwt,
-  IUserData
-} from './types';
-import { Flow } from './enums';
-
-const userData: IUserData = {
-  token: null
-};
+import { ICrmDataResponse, IContactInfo, ICrmData, IDecodedJwt } from './types';
 
 /* tslint:disable */
 function noop() {}
 /* tslint:enable */
 
 const getCrmData = async (): Promise<ICrmDataResponse> => {
-  if (userData.token) {
+  const token = getTokenFromLocalStorage();
+  if (token) {
     try {
-      const decodedJwt = parseJWT(userData.token);
+      const decodedJwt = parseJWT(token);
       if (decodedJwt) {
         return fetchCrmData(decodedJwt.jti);
       } else {
-        throw new Error(COULD_NOT_RETRIEVE_CRM_DATA_MESSAGE);
+        throw new Error('Could not fetch crm data due to invalid token');
       }
     } catch (err) {
       throw new Error('Error decoding jwt');
@@ -56,54 +43,21 @@ const getCrmData = async (): Promise<ICrmDataResponse> => {
   }
 };
 
-export const isAuthenticated = (): boolean => userData.token !== null;
+const isReady = (): boolean => getTokenFromLocalStorage() !== null;
 
-const isReady = (): boolean => isAuthenticated();
-
-/**
- * Secret unknown flow still uses an old deprecated flow.
- * TODO: This method along with authenticateOld() should be removed when ready and
- * authenticateNew() exported instead as authenticate()
- */
-export const authenticate = async (): Promise<string | null> => {
-  if (getFlow() === Flow.SECRET_UNKNOWN) {
-    return authenticateOld();
-  } else {
-    return authenticateNew();
-  }
-};
-
-// TODO: Deprecated. Connected to old flow, remove when ready
-const authenticateOld = async (): Promise<string | null> => {
+const authenticate = async (): Promise<string | null> => {
   if (isTokenInLocalStorage()) {
-    userData.token = getTokenFromLocalStorage();
-    return userData.token;
+    return getTokenFromLocalStorage();
   }
 
   try {
-    const { userticket, code } = await getUserTicket(null);
-    setSecretInLocalStorage(code);
-    userData.token = await oldFetchUserToken(userticket);
-    return userData.token;
-  } catch (err) {
-    throw new Error(`Could not authenticate: ${err}`);
-  }
-};
+    const session = await initializeSession();
+    const appSecret = await login(session.ssoLoginUrl);
+    const token = await exchangeForToken(appSecret, session.ssoLoginUUID);
 
-const authenticateNew = async (): Promise<string | null> => {
-  if (isTokenInLocalStorage()) {
-    userData.token = getTokenFromLocalStorage();
-    return userData.token;
-  }
-
-  try {
-    const secret = getSecretFromLocalStorage();
-    const { userticket, code } = await getUserTicket(secret);
-    userData.token = await fetchUserToken(userticket, code);
-    // Wait to save secret to local storage until fetchUserToken() has successfully completed
-    // and thus the secret has been confirmed to be correct
-    setSecretInLocalStorage(code);
-    return userData.token;
+    setTokenInLocalStorage(token);
+    setSecretInLocalStorage(appSecret);
+    return token;
   } catch (err) {
     throw new Error(`Could not authenticate: ${err}`);
   }
@@ -111,57 +65,52 @@ const authenticateNew = async (): Promise<string | null> => {
 
 export const init = (options): void => {
   initConfig(options);
-
-  // If the token exists in local storage, the user is authenticated and can get token and
-  // perform authenticated actions right away
-  userData.token = getTokenFromLocalStorage();
 };
 
 export const getContactInfo = async (): Promise<IContactInfo | null> =>
   isReady() ? getContactInfoFromCrmData(await getCrmData()) : null;
 
-export const getDefaultDeliveryAddress = async (): Promise<IDeliveryAddressPart | null> =>
-  isReady() ? getDeliveryAddressFromCrmData(await getCrmData()) : null;
-
 export const getDeliveryInfo = async (): Promise<ICrmData | null> =>
   isReady() ? getDeliveryInfoFromCrmData(await getCrmData()) : null;
 
 export const getToken = (): string | null =>
-  isReady() ? userData.token : null;
+  isReady() ? getTokenFromLocalStorage() : null;
 
 export const getUser = (): IDecodedJwt | null =>
-  isReady() ? parseJWT(userData.token!) : null;
+  isReady() ? parseJWT(getTokenFromLocalStorage()!) : null;
+
+const getParent = (id: string): HTMLElement => {
+  const parent = document.getElementById(id);
+  if (!parent) {
+    throw new Error(
+      `Could not find container with id=${id} to append button to`
+    );
+  }
+  return parent;
+};
 
 export const addLoginButtonTo = (id: string, callback = noop): void => {
-  const parent = document.getElementById(id);
+  const button = addButtonTo(getParent(id), {
+    buttonText: 'Logg inn',
+    helpText: 'Bruk innlogging fra INN'
+  });
 
-  if (parent) {
-    const button = addButtonTo(parent, {
-      buttonText: 'Logg inn',
-      helpText: 'Bruk innlogging fra INN'
-    });
-
-    button.addEventListener('click', async () => {
-      await authenticate();
-      callback();
-    });
-  }
+  button.addEventListener('click', async () => {
+    await authenticate();
+    callback();
+  });
 };
 
 export const addCheckoutButtonTo = (id: string, callback = noop): void => {
-  const parent = document.getElementById(id);
+  const button = addButtonTo(getParent(id), {
+    buttonText: 'Hent adresse',
+    helpText: 'Henter adresseinformasjon fra INN',
+    profileLink: 'https://inn-qa-oidsso.opplysningen.no/oidsso/welcome',
+    profileLinkText: 'Rediger profilen din på INN'
+  });
 
-  if (parent) {
-    const button = addButtonTo(parent, {
-      buttonText: 'Hent adresse',
-      helpText: 'Henter adresseinformasjon fra INN',
-      profileLink: 'https://inn-qa-oidsso.opplysningen.no/oidsso/welcome',
-      profileLinkText: 'Rediger profilen din på INN'
-    });
-
-    button.addEventListener('click', async () => {
-      await authenticate();
-      callback();
-    });
-  }
+  button.addEventListener('click', async () => {
+    await authenticate();
+    callback();
+  });
 };

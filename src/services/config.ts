@@ -1,5 +1,5 @@
 import { IConfig } from '../types';
-import { Mode, Flow, ProxyUrl } from '../enums';
+import { Mode, ProxyUrl } from '../enums';
 import { verifyRequiredConfig } from './validate-config';
 
 const DEFAULT_CONFIG = {
@@ -23,8 +23,6 @@ export const getProxyUrl = (): string =>
 
 export const getRequireConsent = (): boolean => config.requireConsent;
 
-export const getFlow = (): Flow => config.flow;
-
 export const initConfig = (newConfig: IConfig = config): void => {
   const errors = verifyRequiredConfig(newConfig)
     .filter(result => !result.valid)
@@ -39,7 +37,6 @@ export const initConfig = (newConfig: IConfig = config): void => {
   config = {
     appName: newConfig.appName,
     mode: newConfig.mode.toLowerCase(),
-    flow: newConfig.flow,
     requireConsent:
       newConfig.requireConsent === undefined
         ? DEFAULT_CONFIG.requireConsent

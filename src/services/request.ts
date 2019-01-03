@@ -1,38 +1,11 @@
-import { getConfig } from './config';
+import { getAppName } from './config';
 import {
   getSecretFromLocalStorage,
-  setSecretInLocalStorage,
   setTokenInLocalStorage
 } from '../utils/local-storage';
-import { ISecretResponse, ICrmDataResponse } from '../types';
-
-import { getAsJson, getAsText } from './fetch';
-
-// TODO: Connected to old flow. Remove when ready
-async function oldFetchSecretFromAppName(
-  userticket: string
-): Promise<ISecretResponse> {
-  const { appName } = getConfig();
-
-  const data = await getAsJson(`/load/api/${appName}?ticket=${userticket}`);
-
-  setSecretInLocalStorage(data.secret);
-  return data;
-}
-
-// TODO: Connected to old flow. Remove when ready
-export async function oldFetchUserToken(userticket: string): Promise<string> {
-  const { secret, ticket: newTicket } = await oldFetchSecretFromAppName(
-    userticket
-  );
-
-  const userToken = await getAsText(
-    `/api/${secret}/get_token_from_ticket/${newTicket}`
-  );
-
-  setTokenInLocalStorage(userToken);
-  return userToken;
-}
+import { ICrmDataResponse, ILoginSession } from '../types';
+import { getAsJson, getAsText, post, postWithJsonResponse } from './fetch';
+import { getQueryParamValue } from '../utils/query';
 
 export async function fetchUserToken(
   userTicket: string,
@@ -52,4 +25,27 @@ export async function fetchCrmData(
   return await getAsJson(
     `/api/${getSecretFromLocalStorage()}/get_shared_delivery_address/${userTokenId}`
   );
+}
+
+export async function initializeSession(): Promise<ILoginSession> {
+  const appSecret = getQueryParamValue(window.location.search, 'code');
+  if (appSecret) {
+    return await postWithJsonResponse(
+      `/application/session/${appSecret}/user/auth/ssologin`
+    );
+  } else {
+    return await postWithJsonResponse(
+      `/application/${getAppName()}/user/auth/ssologin`
+    );
+  }
+}
+
+export async function exchangeForToken(
+  appSecret: string,
+  ssoLoginUUID: string
+): Promise<string> {
+  const token = await post(
+    `/application/session/${appSecret}/user/auth/ssologin/${ssoLoginUUID}/exchange-for-token`
+  );
+  return token;
 }

@@ -4,17 +4,15 @@ import {
   getAppName,
   getProxyUrl,
   getConfig,
-  getFlow,
   getRequireConsent
 } from './config';
-import { Mode, ProxyUrl, Flow } from '../enums';
+import { Mode, ProxyUrl } from '../enums';
 import { IConfig } from '../types';
 
 const APP_NAME = 'example-app';
 const VALID_CONFIG = {
   appName: APP_NAME,
   mode: Mode.DEV,
-  flow: Flow.SECRET_PROVISIONED,
   requireConsent: false
 };
 
@@ -68,13 +66,6 @@ describe('configService', () => {
         mode: Mode.PROD
       });
       expect(getProxyUrl()).toBe(ProxyUrl.PROD);
-    });
-  });
-
-  describe('getFlow', () => {
-    it('should return flow application is using', () => {
-      initConfig(VALID_CONFIG);
-      expect(getFlow()).toBe(Flow.SECRET_PROVISIONED);
     });
   });
 

@@ -6,10 +6,6 @@ import {
   IDeliveryInfoPart,
   ICrmData
 } from '../types';
-import {
-  COULD_NOT_RETRIEVE_CONTACT_INFORMATION_MESSAGE,
-  COULD_NOT_RETRIEVE_ADDRESS_MESSAGE
-} from '../constants/error-messages';
 
 const isObject = (item: any): boolean => typeof item === 'object';
 
@@ -53,7 +49,7 @@ export const getContactInfo = (crmData: ICrmDataResponse): IContactInfo => {
   ) {
     return extractContactInfo(crmData);
   }
-  throw new Error(COULD_NOT_RETRIEVE_CONTACT_INFORMATION_MESSAGE);
+  throw new Error('Could not retrieve contact information');
 };
 
 export const getDeliveryAddress = (
@@ -69,7 +65,7 @@ export const getDeliveryAddress = (
       ...extractDeliveryInfo(crmData)
     };
   }
-  throw new Error(COULD_NOT_RETRIEVE_ADDRESS_MESSAGE);
+  throw new Error('Could not retreive address');
 };
 
 export const getDeliveryInfo = (crmData: ICrmDataResponse): ICrmData => ({
