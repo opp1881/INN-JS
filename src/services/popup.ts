@@ -1,5 +1,6 @@
 import { getQueryParamValue } from '../utils/query';
 import { getRequireConsent } from './config';
+import { initializeSession } from './request';
 
 const isLoginNotInProgress = (popup): boolean =>
   !popup || popup.closed || popup.closed === undefined;
@@ -26,12 +27,18 @@ const windowFeatures = `left=${popupPosX},
                           resizable=no,
                           titlebar=no`;
 
-function openPopup(path: string, requireConsent: boolean): Window | null {
-  return window.open(
-    `${path}?redirectURI=${window.origin}&UserCheckout=${requireConsent}`,
-    'innspaclient',
-    windowFeatures
-  );
+function openPopup(): Window {
+  const popup = window.open('about:blank', 'innspaclient', windowFeatures);
+  if (popup) {
+    return popup;
+  }
+  throw new Error('Could not open login popup');
+}
+
+function redirectPopup(popup: Window, ssoLoginUrl: string): void {
+  popup.location.href = `${ssoLoginUrl}${
+    getRequireConsent() ? '?UserCheckout=true' : ''
+  }`;
 }
 
 function pollForLoginCompletion(
@@ -72,12 +79,21 @@ function pollForLoginCompletion(
   });
 }
 
-export default async function login(url: string): Promise<string> {
-  const popup = openPopup(url, getRequireConsent());
+export default async function login(): Promise<{
+  appSecret: string;
+  ssoLoginUUID: string;
+}> {
+  const popup = openPopup();
+  const session = await initializeSession();
+
+  redirectPopup(popup, session.ssoLoginUrl);
+
   const provisionedSecret = getQueryParamValue(window.location.search, 'code');
   if (provisionedSecret) {
     await pollForLoginCompletion(popup, true);
-    return provisionedSecret;
+    return { appSecret: provisionedSecret, ssoLoginUUID: session.ssoLoginUUID };
+  } else {
+    const appSecret = await pollForLoginCompletion(popup, false);
+    return { appSecret, ssoLoginUUID: session.ssoLoginUUID };
   }
-  return await pollForLoginCompletion(popup, false);
 }

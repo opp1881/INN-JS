@@ -11,11 +11,7 @@ import {
   setSecretInLocalStorage,
   setTokenInLocalStorage
 } from './utils/local-storage';
-import {
-  fetchCrmData,
-  initializeSession,
-  exchangeForToken
-} from './services/request';
+import { fetchCrmData, exchangeForToken } from './services/request';
 import login from './services/popup';
 import { addButtonTo } from './components/Button';
 import parseJWT from './utils/jwt';
@@ -51,9 +47,8 @@ const authenticate = async (): Promise<string | null> => {
   }
 
   try {
-    const session = await initializeSession();
-    const appSecret = await login(session.ssoLoginUrl);
-    const token = await exchangeForToken(appSecret, session.ssoLoginUUID);
+    const { appSecret, ssoLoginUUID } = await login();
+    const token = await exchangeForToken(appSecret, ssoLoginUUID);
 
     setTokenInLocalStorage(token);
     setSecretInLocalStorage(appSecret);
