@@ -1,4 +1,4 @@
-import { PATH_1, PATH_2, STYLE } from './constants';
+import { PATH_1, PATH_2, STYLE } from './button-constants';
 
 interface ITagOptions {
   id?: string;

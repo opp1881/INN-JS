@@ -10,5 +10,54 @@ export const PATH_2 = {
   fill: '#07C'
 };
 
-export const STYLE =
-  '.inn-sso-button-container{display:inline-block;font-family:Arial,sans-serif}.inn-sso-button-container a{color:#0382d2}.inn-sso-button-container a:link,.inn-sso-button-container a:visited{color:rgba(3,130,210,.8)}.inn-sso-button{display:inline-flex;padding:8px 36px;cursor:pointer;margin-bottom:8px;border:1px solid #a1b7d4;border-radius:88px;background-color:#edf5ff;overflow-wrap:break-word;white-space:nowrap;transition:all .2s ease-in-out}.inn-sso-button:active,.inn-sso-button:hover{background-color:#e3efff;transition:all 140ms ease-in-out;box-shadow:1px 2px 4px #aca8b18c;transform:translateY(-1px)}.inn-sso-button:focus{outline:0}.inn-sso-button span{display:inline-flex;align-self:center;padding-left:16px;padding-right:8px;padding-top:2px;font-size:19px;font-weight:200;color:#07c}.inn-sso-button-container p{font-size:14px;text-align:center;color:#555;line-height:1.3}';
+export const STYLE = `
+  .inn-sso-button-container {
+    display: inline-block;
+    font-family: Arial,sans-serif
+  }
+  .inn-sso-button-container a {
+    color: #0382d2
+  }
+  .inn-sso-button-container a:link,
+  .inn-sso-button-container a:visited {
+    color: rgba(3,130,210,.8)
+  }
+  .inn-sso-button {
+    display: inline-flex;
+    padding: 8px 36px;
+    cursor: pointer;
+    margin-bottom: 8px;
+    border: 1px solid #a1b7d4;
+    border-radius: 88px;
+    background-color: #edf5ff;
+    overflow-wrap: break-word;
+    white-space: nowrap;
+    transition: all .2s ease-in-out
+  }
+  .inn-sso-button:active,
+  .inn-sso-button:hover {
+    background-color: #e3efff;
+    transition: all 140ms ease-in-out;
+    box-shadow: 1px 2px 4px #aca8b18c;
+    transform: translateY(-1px)
+  }
+  .inn-sso-button:focus {
+    outline: 0
+  }
+  .inn-sso-button span {
+    display: inline-flex;
+    align-self: center;
+    padding-left: 16px;
+    padding-right: 8px;
+    padding-top: 2px;
+    font-size: 19px;
+    font-weight: 200;
+    color: #07c
+  }
+  .inn-sso-button-container p {
+    font-size: 14px;
+    text-align: center;
+    color: #555;
+    line-height: 1.3
+  }
+`;

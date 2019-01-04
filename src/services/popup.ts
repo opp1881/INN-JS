@@ -1,6 +1,7 @@
 import { getQueryParamValue } from '../utils/query';
 import { getRequireConsent } from './config';
 import { initializeSession } from './request';
+import LoadingPage from '../components/LoadingPage';
 
 const isLoginNotInProgress = (popup): boolean =>
   !popup || popup.closed || popup.closed === undefined;
@@ -30,6 +31,7 @@ const windowFeatures = `left=${popupPosX},
 function openPopup(): Window {
   const popup = window.open('about:blank', 'innspaclient', windowFeatures);
   if (popup) {
+    popup.document.body.appendChild(LoadingPage());
     return popup;
   }
   throw new Error('Could not open login popup');
