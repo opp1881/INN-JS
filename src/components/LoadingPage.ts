@@ -4,7 +4,7 @@ const LOADING_PAGE_STYLE = `
     right: 0;
     bottom: 0;
     margin: -8px;
-    background-image: url(https://inn-qa-oidsso.opplysningen.no/oidsso/js/inn/inn-background.png);
+    background-image: url(https://sso.opplysningen.no/oidsso/js/inn/inn-background.png);
     background-size: cover;
     min-height: 640px;
     background-position-x: 50%;
