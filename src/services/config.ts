@@ -1,5 +1,5 @@
 import { IConfig } from '../types';
-import { Mode, ProxyUrl } from '../enums';
+import { Mode, ProfileLink, ProxyUrl, BackgroundImage } from '../enums';
 import { verifyRequiredConfig } from './validate-config';
 
 const DEFAULT_CONFIG = {
@@ -22,6 +22,12 @@ export const getProxyUrl = (): string =>
   getMode() === Mode.DEV ? ProxyUrl.DEV : ProxyUrl.PROD;
 
 export const getRequireConsent = (): boolean => config.requireConsent;
+
+export const getBackgroundImageUrl = (): string =>
+  getMode() === Mode.DEV ? BackgroundImage.DEV : BackgroundImage.PROD;
+
+export const getProfileLink = (): string =>
+  getMode() === Mode.DEV ? ProfileLink.DEV : ProfileLink.PROD;
 
 export const initConfig = (newConfig: IConfig = config): void => {
   const errors = verifyRequiredConfig(newConfig)

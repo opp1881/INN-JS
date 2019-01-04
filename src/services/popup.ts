@@ -7,11 +7,11 @@ const isLoginNotInProgress = (popup): boolean =>
   !popup || popup.closed || popup.closed === undefined;
 
 /* Horisontal positioning */
-const popupWidth = 480;
+const popupWidth = 525;
 const popupPosX = window.screenLeft + (window.outerWidth / 2 - popupWidth / 2);
 
 /* Vertical positioning */
-const popupHeight = 640;
+const popupHeight = 700;
 const popupPosY = window.screenTop + (window.outerHeight / 2 - popupHeight / 2);
 
 /* Poll interval in ms */

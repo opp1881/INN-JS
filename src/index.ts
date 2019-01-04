@@ -1,6 +1,6 @@
 import 'whatwg-fetch';
 
-import { initConfig } from './services/config';
+import { initConfig, getProfileLink } from './services/config';
 import {
   getContactInfo as getContactInfoFromCrmData,
   getDeliveryInfo as getDeliveryInfoFromCrmData
@@ -100,7 +100,7 @@ export const addCheckoutButtonTo = (id: string, callback = noop): void => {
   const button = addButtonTo(getParent(id), {
     buttonText: 'Hent adresse',
     helpText: 'Henter adresseinformasjon fra INN',
-    profileLink: 'https://inn-qa-oidsso.opplysningen.no/oidsso/welcome',
+    profileLink: getProfileLink(),
     profileLinkText: 'Rediger profilen din på INN'
   });
 

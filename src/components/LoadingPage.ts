@@ -1,12 +1,11 @@
-const LOADING_PAGE_STYLE = `
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+import { getBackgroundImageUrl } from '../services/config';
+
+function getLoadingPageStyle(): string {
+  return `
     margin: -8px;
-    background-image: url(https://sso.opplysningen.no/oidsso/js/inn/inn-background.png);
+    background-image: url(${getBackgroundImageUrl()});
     background-size: cover;
-    min-height: 640px;
+    min-height: 700px;
     background-position-x: 50%;
     background-position-y: 0;
     background-attachment: scroll;
@@ -17,11 +16,12 @@ const LOADING_PAGE_STYLE = `
     font-family: OpenSans-Regular,sans-serif;
     font-size: 1.3rem;
 `;
+}
 
 export default function LoadingPage(): HTMLElement {
   const div = document.createElement('div');
   div.setAttribute('class', 'intializing-container');
-  div.setAttribute('style', LOADING_PAGE_STYLE);
+  div.setAttribute('style', getLoadingPageStyle());
   div.appendChild(document.createTextNode('Initializing session...'));
   return div;
 }
