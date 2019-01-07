@@ -1,0 +1,25 @@
+{
+  "deliveryaddress": {
+    "reference": "",
+    "postalcode": "1234",
+    "countryCode": "no",
+    "contact": {
+      "phoneNumber": "41234567",
+      "emailConfirmed": true,
+      "name": "Tore Testbruker",
+      "email": "tore@epost.no",
+      "phoneNumberConfirmed": true
+    },
+    "name": "Tore Testbruker",
+    "postalcity": "Oslo",
+    "addressLine1": "Gate 1",
+    "company": null,
+    "addressLine2": null,
+    "deliveryinformation": {
+      "pickupPoint": "",
+      "additionalAddressInfo": "",
+      "Deliverytime": ""
+    },
+    "tags": "adresse"
+  }
+}

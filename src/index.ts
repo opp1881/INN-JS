@@ -15,35 +15,34 @@ import { fetchCrmData, exchangeForToken } from './services/request';
 import login from './services/popup';
 import { addButtonTo } from './components/Button';
 import parseJWT from './utils/jwt';
-import { ICrmDataResponse, IContactInfo, ICrmData, IDecodedJwt } from './types';
+import {
+  ICrmDataResponse,
+  IContactInfo,
+  ICrmData,
+  IDecodedJwt,
+  IButtonConfiguration
+} from './types';
 
 /* tslint:disable */
-function noop() {}
+function noop(data?) {}
 /* tslint:enable */
 
-const getCrmData = async (): Promise<ICrmDataResponse> => {
+export const getCrmData = async (): Promise<ICrmDataResponse> => {
   const token = getTokenFromLocalStorage();
   if (token) {
-    try {
-      const decodedJwt = parseJWT(token);
-      if (decodedJwt) {
-        return fetchCrmData(decodedJwt.jti);
-      } else {
-        throw new Error('Could not fetch crm data due to invalid token');
-      }
-    } catch (err) {
-      throw new Error('Error decoding jwt');
+    const decodedJwt = parseJWT(token);
+    if (decodedJwt) {
+      return fetchCrmData(decodedJwt.jti);
     }
+    throw new Error('Could not fetch crm data due to invalid token');
   } else {
     throw new Error('Could not fetch crm data because of missing token');
   }
 };
 
-const isReady = (): boolean => getTokenFromLocalStorage() !== null;
-
-const authenticate = async (): Promise<string | null> => {
+export const authenticate = async (): Promise<string> => {
   if (isTokenInLocalStorage()) {
-    return getTokenFromLocalStorage();
+    return getTokenFromLocalStorage() as string;
   }
 
   try {
@@ -63,49 +62,63 @@ export const init = (options): void => {
 };
 
 export const getContactInfo = async (): Promise<IContactInfo | null> =>
-  isReady() ? getContactInfoFromCrmData(await getCrmData()) : null;
+  isTokenInLocalStorage()
+    ? getContactInfoFromCrmData(await getCrmData())
+    : null;
 
 export const getDeliveryInfo = async (): Promise<ICrmData | null> =>
-  isReady() ? getDeliveryInfoFromCrmData(await getCrmData()) : null;
+  isTokenInLocalStorage()
+    ? getDeliveryInfoFromCrmData(await getCrmData())
+    : null;
 
-export const getToken = (): string | null =>
-  isReady() ? getTokenFromLocalStorage() : null;
+export const getToken = (): string | null => getTokenFromLocalStorage();
 
 export const getUser = (): IDecodedJwt | null =>
-  isReady() ? parseJWT(getTokenFromLocalStorage()!) : null;
+  isTokenInLocalStorage()
+    ? parseJWT(getTokenFromLocalStorage() as string)
+    : null;
 
-const getParent = (id: string): HTMLElement => {
-  const parent = document.getElementById(id);
-  if (!parent) {
-    throw new Error(
-      `Could not find container with id=${id} to append button to`
-    );
-  }
-  return parent;
+const initButton = (
+  id: string,
+  options: IButtonConfiguration,
+  onSuccess: (token: string) => void,
+  onError: (err: string) => void
+): void => {
+  const button = addButtonTo(id, options);
+  button.addEventListener('click', async () => {
+    try {
+      const token = await authenticate();
+      onSuccess(token);
+    } catch (err) {
+      onError(err);
+    }
+  });
 };
 
-export const addLoginButtonTo = (id: string, callback = noop): void => {
-  const button = addButtonTo(getParent(id), {
+export const addLoginButtonTo = (
+  id: string,
+  onSuccess = noop,
+  onError = noop
+): void => {
+  const options = {
     buttonText: 'Logg inn',
     helpText: 'Bruk innlogging fra INN'
-  });
+  };
 
-  button.addEventListener('click', async () => {
-    await authenticate();
-    callback();
-  });
+  initButton(id, options, onSuccess, onError);
 };
 
-export const addCheckoutButtonTo = (id: string, callback = noop): void => {
-  const button = addButtonTo(getParent(id), {
+export const addCheckoutButtonTo = (
+  id: string,
+  onSuccess = noop,
+  onError = noop
+): void => {
+  const options = {
     buttonText: 'Hent adresse',
     helpText: 'Henter adresseinformasjon fra INN',
     profileLink: getProfileLink(),
     profileLinkText: 'Rediger profilen din på INN'
-  });
+  };
 
-  button.addEventListener('click', async () => {
-    await authenticate();
-    callback();
-  });
+  initButton(id, options, onSuccess, onError);
 };

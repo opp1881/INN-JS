@@ -1,4 +1,5 @@
 import { PATH_1, PATH_2, STYLE } from './button-constants';
+import { IButtonConfiguration } from '../types';
 
 interface ITagOptions {
   id?: string;
@@ -45,6 +46,9 @@ function createTag(tagName: string, options: ITagOptions = {}): HTMLElement {
   if (options.className) {
     tag.setAttribute('class', options.className);
   }
+  if (options.id) {
+    tag.setAttribute('id', options.id);
+  }
 
   if (options.text) {
     tag.innerText = options.text;
@@ -73,17 +77,22 @@ function createTextNode(text: string): Text {
   return document.createTextNode(text);
 }
 
-interface IButtonConfiguration {
-  buttonText: string;
-  helpText?: string;
-  profileLink?: string;
-  profileLinkText?: string;
+function getElementById(id: string): HTMLElement {
+  const element = document.getElementById(id);
+  if (!element) {
+    throw new Error(
+      `Could not find container with id=${id} to append button to`
+    );
+  }
+  return element;
 }
 
 export function addButtonTo(
-  parent: HTMLElement,
+  id: string,
   { buttonText, helpText, profileLink, profileLinkText }: IButtonConfiguration
 ): HTMLElement {
+  const parent = getElementById(id);
+
   const buttonContainer = createTag('div', {
     className: 'inn-sso-button-container'
   });

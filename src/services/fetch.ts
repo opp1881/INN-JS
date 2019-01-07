@@ -4,7 +4,6 @@ import { getTokenFromLocalStorage } from '../utils/local-storage';
 const getUrl = (path: string): string =>
   path.startsWith('/') ? `${getProxyUrl()}${path}` : `${getProxyUrl()}/${path}`;
 
-// TODO: Merge auth header token with headers
 const getHeaders = (headers: HeadersInit = {}): HeadersInit => {
   const token = getTokenFromLocalStorage();
   return headers;
