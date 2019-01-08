@@ -11,13 +11,7 @@ The INN JS Library is available through NPM. This can be installed using _npm_ o
 **npm**
 
 ```
-$ npm i @opplysningen1881/inn-js
-```
-
-**yarn**
-
-```
-$ yarn install @opplysningen1881/inn-js
+$ npm install @opplysningen1881/inn-js
 ```
 
 # Usage
