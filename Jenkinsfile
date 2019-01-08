@@ -25,6 +25,10 @@ buildConfig {
             stage('Tests') {
                 sh 'npm test'
             }
+
+            stage('Build') {
+                sh 'npm run build'
+            }
         }
     }
 }
