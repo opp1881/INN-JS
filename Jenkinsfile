@@ -6,7 +6,7 @@ buildConfig {
     dockerNode {
         checkout scm
 
-        def img = docker.image('circleci/node11')
+        def img = docker.image('circleci/node')
         img.pull()
 
         img.inside {
