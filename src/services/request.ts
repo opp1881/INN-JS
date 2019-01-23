@@ -23,7 +23,7 @@ export async function fetchCrmData(
   userTokenId: string
 ): Promise<ICrmDataResponse> {
   return await getAsJson(
-    `/api/${getSecretFromLocalStorage()}/get_shared_delivery_address/${userTokenId}`
+    `/generic/${getSecretFromLocalStorage()}/${userTokenId}/shared-delivery-address`
   );
 }
 
