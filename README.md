@@ -110,6 +110,28 @@ innClient.getToken(); // Add as HTTP header (Authorization: Bearer <token>)
 
 If you want to contribute, please submit a pull request for review. If you have questions or suggestions, please submit an issue.
 
+## Setup
+
+```
+$ npm install
+```
+
+## Test
+Install Jest, then run with `npm test`.
+```
+$ npm install -g jest
+$ npm test
+```
+
+
+## Build
+You'll need Microbundle and Rimraf to make a build.
+
+```
+$ npm install -g microbundle rimraf
+$ npm run build
+```
+
 # License
 
 Apache License 2.0. [See LICENSE.md for details](https://github.com/capralifecycle/INN-JS/blob/master/LICENSE)
