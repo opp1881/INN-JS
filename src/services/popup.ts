@@ -1,4 +1,4 @@
-import { getQueryParamValue } from '../utils/query';
+import { getQueryParamValue, getAddressFromQuery } from '../utils/query';
 import { getRequireConsent } from './config';
 import { initializeSession } from './request';
 import LoadingPage from '../components/LoadingPage';
@@ -46,7 +46,7 @@ function redirectPopup(popup: Window, ssoLoginUrl: string): void {
 function pollForLoginCompletion(
   popup: Window | null,
   isSecretProvisioned: boolean
-): Promise<string> {
+): Promise<[string | null, object | null]> {
   return new Promise((resolve, reject) => {
     const pollTimer = window.setInterval(() => {
       if (isLoginNotInProgress(popup)) {
@@ -55,27 +55,24 @@ function pollForLoginCompletion(
         try {
           if (popup && popup.location.href.indexOf(window.origin) !== -1) {
             window.clearInterval(pollTimer);
-
             if (isSecretProvisioned) {
               popup.close();
               resolve();
             } else {
               const { search } = popup!.location;
-
               popup.close();
               if (search) {
+                const crmDataFromSearchQuery = getAddressFromQuery(search);
                 const code = getQueryParamValue(search, 'code');
                 if (code) {
-                  resolve(code);
+                  resolve([code, crmDataFromSearchQuery]);
                 } else {
                   reject('Could not find required query params');
                 }
               }
             }
           }
-          /* tslint:disable */
-        } catch (e) {}
-        /* tslint:enable */
+        } catch (e) {} // tslint:disable-line
       }
     }, pollInterval);
   });
@@ -95,7 +92,17 @@ export default async function login(): Promise<{
     await pollForLoginCompletion(popup, true);
     return { appSecret: provisionedSecret, ssoLoginUUID: session.ssoLoginUUID };
   } else {
-    const appSecret = await pollForLoginCompletion(popup, false);
-    return { appSecret, ssoLoginUUID: session.ssoLoginUUID };
+    const [appSecret, crmData] = await pollForLoginCompletion(popup, false);
+    if (crmData !== null) {
+      // User did not register, so we set the user contact info to be data from query params
+      sessionStorage.setItem(
+        'crmDataForUnregisteredUser',
+        JSON.stringify(crmData)
+      );
+    }
+    return {
+      appSecret: appSecret as string,
+      ssoLoginUUID: session.ssoLoginUUID
+    };
   }
 }

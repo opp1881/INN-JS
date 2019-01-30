@@ -12,6 +12,11 @@ import {
   setTokenInLocalStorage
 } from './utils/local-storage';
 import { fetchCrmData, exchangeForToken } from './services/request';
+import {
+  clearCrmDataInSessionStorage,
+  isCrmDataInSessionStorage,
+  getCrmDataFromSessionStorage
+} from './utils/session-storage';
 import login from './services/popup';
 import { addButtonTo } from './components/Button';
 import parseJWT from './utils/jwt';
@@ -28,6 +33,11 @@ function noop(data?) {}
 /* tslint:enable */
 
 export const getCrmData = async (): Promise<ICrmDataResponse> => {
+  // In the case that user does not register with INN, but only fetches address
+  const crmDataFromSessionStorage = getCrmDataFromSessionStorage();
+  if (crmDataFromSessionStorage !== null) {
+    return Promise.resolve(crmDataFromSessionStorage);
+  }
   const token = getTokenFromLocalStorage();
   if (token) {
     const decodedJwt = parseJWT(token);
@@ -40,17 +50,25 @@ export const getCrmData = async (): Promise<ICrmDataResponse> => {
   }
 };
 
+/**
+ * authenticate
+ * Authenticates the user and returns the token as a string
+ * If the user is not authenticated, an empty string is returned.
+ * In the case that the user does not wnat to register, this allows the app to then fetch CRM Data from session storage.
+ */
 export const authenticate = async (): Promise<string> => {
   if (isTokenInLocalStorage()) {
     return getTokenFromLocalStorage() as string;
   }
+  clearCrmDataInSessionStorage();
 
   try {
     const { appSecret, ssoLoginUUID } = await login();
-    const token = await exchangeForToken(appSecret, ssoLoginUUID);
-
-    setTokenInLocalStorage(token);
-    setSecretInLocalStorage(appSecret);
+    const token = (await exchangeForToken(appSecret, ssoLoginUUID)) || '';
+    if (token !== '') {
+      setTokenInLocalStorage(token);
+      setSecretInLocalStorage(appSecret);
+    }
     return token;
   } catch (err) {
     throw new Error(`Could not authenticate: ${err}`);
@@ -62,12 +80,12 @@ export const init = (options): void => {
 };
 
 export const getContactInfo = async (): Promise<IContactInfo | null> =>
-  isTokenInLocalStorage()
+  isTokenInLocalStorage() || isCrmDataInSessionStorage()
     ? getContactInfoFromCrmData(await getCrmData())
     : null;
 
 export const getDeliveryInfo = async (): Promise<ICrmData | null> =>
-  isTokenInLocalStorage()
+  isTokenInLocalStorage() || isCrmDataInSessionStorage()
     ? getDeliveryInfoFromCrmData(await getCrmData())
     : null;
 

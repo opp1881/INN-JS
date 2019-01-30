@@ -46,6 +46,8 @@ export async function exchangeForToken(
 ): Promise<string> {
   const token = await post(
     `/application/session/${appSecret}/user/auth/ssologin/${ssoLoginUUID}/exchange-for-token`
-  );
+  ).catch(error => {
+    // Catched so that non-registration flow may continue
+  });
   return token;
 }
