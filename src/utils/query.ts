@@ -1,3 +1,5 @@
+import { ICrmDataResponse } from '../types';
+
 export const getQueryParamValue = (
   search: string,
   queryParamKey: string
@@ -9,5 +11,38 @@ export const getQueryParamValue = (
     .split('&')
     .find(q => regexPattern.test(q));
 
-  return queryParam ? queryParam.split('=')[1] : null;
+  return queryParam
+    ? decodeURI(replaceCharactersInString(queryParam.split('=')[1], '+', ' '))
+    : null;
+};
+
+export const getAddressFromQuery = (search: string): ICrmDataResponse => {
+  return {
+    deliveryaddress: {
+      contact: {
+        name: `${getQueryParamValue(search, 'firstName')} ${getQueryParamValue(
+          search,
+          'lastName'
+        )}`,
+        emailAddress: getQueryParamValue(search, 'emailAddress') || '',
+        phoneNumber: getQueryParamValue(search, 'phoneNumber') || ''
+      },
+      addressLine1: getQueryParamValue(search, 'streetAddress') || '',
+      postalcode: getQueryParamValue(search, 'zipcode') || '',
+      deliveryinformation: {
+        additionalAddressInfo:
+          getQueryParamValue(search, 'additionalAddressInfo') || '',
+        Deliverytime: getQueryParamValue(search, 'Deliverytime') || '',
+        pickupPoint: getQueryParamValue(search, 'pickupPoint') || ''
+      }
+    }
+  };
+};
+
+const replaceCharactersInString = (
+  target: string,
+  search: string,
+  replacement: string
+) => {
+  return target.split(search).join(replacement);
 };
