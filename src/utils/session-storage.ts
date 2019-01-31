@@ -18,3 +18,7 @@ export const getCrmDataFromSessionStorage = (): ICrmData | null => {
     : null;
   return crmDataFromSessionStorage;
 };
+
+export const setCrmDataInSessionStorage = (crmData: ICrmData) => {
+  sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(crmData));
+};

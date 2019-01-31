@@ -68,6 +68,13 @@ export const getDeliveryAddress = (
   throw new Error('Could not retreive address');
 };
 
+export const areCrmDataFieldsEmpty = (crmData: ICrmDataResponse): boolean => {
+  const { deliveryaddress } = crmData;
+  return (
+    deliveryaddress.contact.name === '' && deliveryaddress.addressLine1 === ''
+  );
+};
+
 export const getDeliveryInfo = (crmData: ICrmDataResponse): ICrmData => ({
   contactInfo: getContactInfo(crmData),
   deliveryAddress: getDeliveryAddress(crmData)

@@ -20,10 +20,7 @@ export const getAddressFromQuery = (search: string): ICrmDataResponse => {
   return {
     deliveryaddress: {
       contact: {
-        name: `${getQueryParamValue(search, 'firstName')} ${getQueryParamValue(
-          search,
-          'lastName'
-        )}`,
+        name: getFullNameFromParams(search) || '',
         emailAddress: getQueryParamValue(search, 'emailAddress') || '',
         phoneNumber: getQueryParamValue(search, 'phoneNumber') || ''
       },
@@ -37,6 +34,12 @@ export const getAddressFromQuery = (search: string): ICrmDataResponse => {
       }
     }
   };
+};
+
+const getFullNameFromParams = (search: string): string | null => {
+  const firstName = getQueryParamValue(search, 'firstName');
+  const lastName = getQueryParamValue(search, 'lastName');
+  return firstName && lastName ? `${firstName} ${lastName}` : null;
 };
 
 const replaceCharactersInString = (

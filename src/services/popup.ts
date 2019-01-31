@@ -1,4 +1,7 @@
+import { ICrmData } from '../types';
 import { getQueryParamValue, getAddressFromQuery } from '../utils/query';
+import { setCrmDataInSessionStorage } from '../utils/session-storage';
+import { areCrmDataFieldsEmpty } from './crm-data';
 import { getRequireConsent } from './config';
 import { initializeSession } from './request';
 import LoadingPage from '../components/LoadingPage';
@@ -93,12 +96,9 @@ export default async function login(): Promise<{
     return { appSecret: provisionedSecret, ssoLoginUUID: session.ssoLoginUUID };
   } else {
     const [appSecret, crmData] = await pollForLoginCompletion(popup, false);
-    if (crmData !== null) {
+    if (crmData !== null && !areCrmDataFieldsEmpty(crmData)) {
       // User did not register, so we set the user contact info to be data from query params
-      sessionStorage.setItem(
-        'crmDataForUnregisteredUser',
-        JSON.stringify(crmData)
-      );
+      setCrmDataInSessionStorage(crmData as ICrmData);
     }
     return {
       appSecret: appSecret as string,
