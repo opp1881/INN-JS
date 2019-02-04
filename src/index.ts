@@ -33,18 +33,16 @@ function noop(data?) {}
 /* tslint:enable */
 
 export const getCrmData = async (): Promise<ICrmDataResponse> => {
-  // In the case that user does not register with INN, but only fetches address
-  const crmDataFromSessionStorage = getCrmDataFromSessionStorage();
-  if (crmDataFromSessionStorage !== null) {
-    return Promise.resolve(crmDataFromSessionStorage);
-  }
   const token = getTokenFromLocalStorage();
+  const crmDataFromSessionStorage = getCrmDataFromSessionStorage();
   if (token) {
     const decodedJwt = parseJWT(token);
     if (decodedJwt) {
       return fetchCrmData(decodedJwt.jti);
     }
     throw new Error('Could not fetch crm data due to invalid token');
+  } else if (crmDataFromSessionStorage !== null) {
+    return crmDataFromSessionStorage;
   } else {
     throw new Error('Could not fetch crm data because of missing token');
   }
@@ -60,7 +58,9 @@ export const authenticate = async (): Promise<string> => {
   if (isTokenInLocalStorage()) {
     return getTokenFromLocalStorage() as string;
   }
-  clearCrmDataInSessionStorage();
+  if (isCrmDataInSessionStorage()) {
+    clearCrmDataInSessionStorage(); // In case the same window has been used before
+  }
 
   try {
     const { appSecret, ssoLoginUUID } = await login();
