@@ -2,11 +2,9 @@
 
 Framework independent library for integrating web applications with Opplysningen INN Single Sign-On solution.
 
-## **Note that this library is still in an unstable state and the API is subject to change**
-
 # Installation
 
-The INN JS Library is available through NPM. This can be installed using _npm_ or _yarn_
+The INN JS Library is available through NPM, and can be installed either using _npm_ or _yarn_
 
 **npm**
 
@@ -28,7 +26,7 @@ innClient.init({
 });
 ```
 
-## Add login button to your application
+## Add the INN login button to your application
 
 ```
 // HTML
@@ -48,7 +46,7 @@ function handleError() {
 innClient.addLoginButtonTo('container-for-login-button', handleSuccess, handleError);
 ```
 
-## Add checkout button to your application
+## Add the INN checkout button to your application
 
 ```
 // HTML
@@ -109,6 +107,30 @@ innClient.getToken(); // Add as HTTP header (Authorization: Bearer <token>)
 # Contributing
 
 If you want to contribute, please submit a pull request for review. If you have questions or suggestions, please submit an issue.
+
+## Setup
+
+```
+$ npm install
+```
+
+## Test
+
+Install Jest, then run with `npm test`.
+
+```
+$ npm install -g jest
+$ npm test
+```
+
+## Build
+
+You'll need Microbundle and Rimraf to make a build.
+
+```
+$ npm install -g microbundle rimraf
+$ npm run build
+```
 
 # License
 
