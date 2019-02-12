@@ -2,6 +2,10 @@
 
 Framework independent library for integrating web applications with Opplysningen INN Single Sign-On solution.
 
+# Registering a new application
+
+Information concerning registering a new application with Opplysningen INN can be found in [Opplysningen INN Single Sign-On documentation](https://inn-prod-ss.opplysningen.no/innss/docs.html)
+
 # Installation
 
 The INN JS Library is available through NPM, and can be installed either using _npm_ or _yarn_
