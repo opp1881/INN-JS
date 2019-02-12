@@ -4,6 +4,11 @@
   "main": "lib/inn-js.js",
   "source": "src/index.ts",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/opp1881/INN-JS"
+  },
+  "homepage": "https://inn-prod-ss.opplysningen.no/innss/docs.html",
   "scripts": {
     "build": "rimraf lib && microbundle -o lib -f cjs --name inn-js --sourcemap false",
     "test": "jest",
