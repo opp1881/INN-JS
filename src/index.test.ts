@@ -246,7 +246,7 @@ describe('inn-js', () => {
         .spyOn(request, 'exchangeForToken')
         .mockResolvedValueOnce(DUMMY_TOKEN);
 
-      const token = await innClient.authenticate();
+      const token = await innClient.authenticate({ withUserCheckout: true });
       expect(token).toEqual(DUMMY_TOKEN);
     });
 
@@ -273,7 +273,7 @@ describe('inn-js', () => {
         'setSecretInLocalStorage'
       );
 
-      await innClient.authenticate();
+      await innClient.authenticate({ withUserCheckout: true });
 
       expect(mockSetTokenInLocalStorage).toHaveBeenCalledTimes(1);
       expect(mockSetTokenInLocalStorage).toHaveBeenCalledWith(DUMMY_TOKEN);

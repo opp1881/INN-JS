@@ -22,6 +22,7 @@ import {
   IDecodedJwt,
   IButtonConfiguration
 } from './types';
+import { ILoginOptions } from './types/login-options';
 
 /* tslint:disable */
 function noop(data?) {}
@@ -40,13 +41,17 @@ export const getCrmData = async (): Promise<ICrmDataResponse> => {
   }
 };
 
-export const authenticate = async (): Promise<string> => {
+export const authenticate = async (
+  loginOptions: ILoginOptions
+): Promise<string> => {
   if (isTokenInLocalStorage()) {
     return getTokenFromLocalStorage() as string;
   }
 
   try {
-    const { appSecret, ssoLoginUUID } = await login();
+    const { appSecret, ssoLoginUUID } = await login(
+      loginOptions.withUserCheckout
+    );
     const token = await exchangeForToken(appSecret, ssoLoginUUID);
 
     setTokenInLocalStorage(token);
@@ -82,12 +87,13 @@ const initButton = (
   id: string,
   options: IButtonConfiguration,
   onSuccess: (token: string) => void,
-  onError: (err: string) => void
+  onError: (err: string) => void,
+  loginOptions: ILoginOptions
 ): void => {
   const button = addButtonTo(id, options);
   button.addEventListener('click', async () => {
     try {
-      const token = await authenticate();
+      const token = await authenticate(loginOptions);
       onSuccess(token);
     } catch (err) {
       onError(err);
@@ -105,7 +111,7 @@ export const addLoginButtonTo = (
     helpText: 'Bruk innlogging fra INN'
   };
 
-  initButton(id, options, onSuccess, onError);
+  initButton(id, options, onSuccess, onError, { withUserCheckout: false });
 };
 
 export const addCheckoutButtonTo = (
@@ -120,5 +126,5 @@ export const addCheckoutButtonTo = (
     profileLinkText: 'Rediger profilen din på INN'
   };
 
-  initButton(id, options, onSuccess, onError);
+  initButton(id, options, onSuccess, onError, { withUserCheckout: true });
 };

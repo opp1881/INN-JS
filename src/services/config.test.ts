@@ -3,8 +3,7 @@ import {
   getMode,
   getAppName,
   getProxyUrl,
-  getConfig,
-  getRequireConsent
+  getConfig
 } from './config';
 import { Mode, ProxyUrl } from '../enums';
 import { IConfig } from '../types';
@@ -12,8 +11,7 @@ import { IConfig } from '../types';
 const APP_NAME = 'example-app';
 const VALID_CONFIG = {
   appName: APP_NAME,
-  mode: Mode.DEV,
-  requireConsent: false
+  mode: Mode.DEV
 };
 
 describe('configService', () => {
@@ -66,21 +64,6 @@ describe('configService', () => {
         mode: Mode.PROD
       });
       expect(getProxyUrl()).toBe(ProxyUrl.PROD);
-    });
-  });
-
-  describe('getRequireConsent', () => {
-    it('should return configured consent', () => {
-      initConfig({
-        ...VALID_CONFIG,
-        requireConsent: true
-      });
-      expect(getRequireConsent()).toBe(true);
-    });
-
-    it('should return default consent', () => {
-      initConfig(VALID_CONFIG);
-      expect(getRequireConsent()).toBe(false);
     });
   });
 });
