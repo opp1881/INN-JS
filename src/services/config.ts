@@ -2,10 +2,6 @@ import { IConfig } from '../types';
 import { Mode, ProfileLink, ProxyUrl, BackgroundImage } from '../enums';
 import { verifyRequiredConfig } from './validate-config';
 
-const DEFAULT_CONFIG = {
-  requireConsent: false
-};
-
 let config;
 
 export const getConfig = (): IConfig => config;
@@ -20,8 +16,6 @@ export const getAppName = (): string => config.appName;
 
 export const getProxyUrl = (): string =>
   getMode() === Mode.DEV ? ProxyUrl.DEV : ProxyUrl.PROD;
-
-export const getRequireConsent = (): boolean => config.requireConsent;
 
 export const getBackgroundImageUrl = (): string =>
   getMode() === Mode.DEV ? BackgroundImage.DEV : BackgroundImage.PROD;
@@ -42,10 +36,6 @@ export const initConfig = (newConfig: IConfig = config): void => {
 
   config = {
     appName: newConfig.appName,
-    mode: newConfig.mode.toLowerCase(),
-    requireConsent:
-      newConfig.requireConsent === undefined
-        ? DEFAULT_CONFIG.requireConsent
-        : newConfig.requireConsent
+    mode: newConfig.mode.toLowerCase()
   };
 };

@@ -2,11 +2,13 @@
 
 Framework independent library for integrating web applications with Opplysningen INN Single Sign-On solution.
 
-## **Note that this library is still in an unstable state and the API is subject to change**
+# Registering a new application
+
+Information concerning registering a new application with Opplysningen INN can be found in [Opplysningen INN Single Sign-On documentation](https://inn-prod-ss.opplysningen.no/innss/docs.html)
 
 # Installation
 
-The INN JS Library is available through NPM. This can be installed using _npm_ or _yarn_
+The INN JS Library is available through NPM, and can be installed either using _npm_ or _yarn_
 
 **npm**
 
@@ -50,7 +52,7 @@ function handleError() {
 innClient.addLoginButtonTo('container-for-login-button', handleSuccess, handleError);
 ```
 
-## Add checkout button to your application
+## Add the INN checkout button to your application
 
 ```
 // HTML

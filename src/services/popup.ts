@@ -2,7 +2,6 @@ import { ICrmData } from '../types';
 import { getQueryParamValue, getAddressFromQuery } from '../utils/query';
 import { setCrmDataInSessionStorage } from '../utils/session-storage';
 import { areCrmDataFieldsEmpty } from './crm-data';
-import { getRequireConsent } from './config';
 import { initializeSession } from './request';
 import LoadingPage from '../components/LoadingPage';
 
@@ -40,10 +39,12 @@ function openPopup(): Window {
   throw new Error('Could not open login popup');
 }
 
-function redirectPopup(popup: Window, ssoLoginUrl: string): void {
-  popup.location.href = `${ssoLoginUrl}${
-    getRequireConsent() ? '?UserCheckout=true' : ''
-  }`;
+function redirectPopup(
+  popup: Window,
+  ssoLoginUrl: string,
+  withUserCheckout: boolean
+): void {
+  popup.location.href = `${ssoLoginUrl}?UserCheckout=${withUserCheckout}`;
 }
 
 function pollForLoginCompletion(
@@ -81,14 +82,16 @@ function pollForLoginCompletion(
   });
 }
 
-export default async function login(): Promise<{
+export default async function login(
+  withUserCheckout: boolean
+): Promise<{
   appSecret: string;
   ssoLoginUUID: string;
 }> {
   const popup = openPopup();
   const session = await initializeSession();
 
-  redirectPopup(popup, session.ssoLoginUrl);
+  redirectPopup(popup, session.ssoLoginUrl, withUserCheckout);
 
   const provisionedSecret = getQueryParamValue(window.location.search, 'code');
   if (provisionedSecret) {
