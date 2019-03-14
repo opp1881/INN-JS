@@ -13,6 +13,13 @@ const VALID_CONFIG = {
   appName: APP_NAME,
   mode: Mode.DEV
 };
+const OVERRIDE_CONFIG = {
+  appName: APP_NAME,
+  mode: Mode.DEV,
+  profileUrl: 'https://inn-override-sso.opplysningen.no/oidsso/js/inn/inn-background.png',
+  profileBackgroundUrl: 'https://inn-override-sso.opplysningen.no/oidsso/welcome',
+  proxyUrl: 'https://inn-override-spaproxy.opplysningen.no/proxy'
+}
 
 describe('configService', () => {
   describe('initConfig', () => {
@@ -36,6 +43,12 @@ describe('configService', () => {
       } as IConfig);
       expect(getConfig()).toEqual(VALID_CONFIG);
     });
+
+    it('should set config with url overrides', () => {
+      initConfig(OVERRIDE_CONFIG);
+      expect(getConfig()).toEqual(OVERRIDE_CONFIG);
+      expect(getProxyUrl()).toEqual('https://inn-override-spaproxy.opplysningen.no/proxy');
+    })
   });
 
   describe('getMode', () => {
