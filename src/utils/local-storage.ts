@@ -29,3 +29,9 @@ export const getTokenFromLocalStorage = (): string | null =>
 
 export const isTokenInLocalStorage = (): boolean =>
   !!getValue(TOKEN_KEY) || false;
+
+export const clearTokenFromLocalStorage = (): void => {
+  if (isLocalStorageAvailable()) {
+    window.localStorage.removeItem(TOKEN_KEY);
+  }
+};

@@ -9,7 +9,8 @@ import {
   isTokenInLocalStorage,
   getTokenFromLocalStorage,
   setSecretInLocalStorage,
-  setTokenInLocalStorage
+  setTokenInLocalStorage,
+  clearTokenFromLocalStorage
 } from './utils/local-storage';
 import { fetchCrmData, exchangeForToken } from './services/request';
 import login from './services/popup';
@@ -93,6 +94,11 @@ const initButton = (
   const button = addButtonTo(id, options);
   button.addEventListener('click', async () => {
     try {
+      if (loginOptions.withUserCheckout) {
+        // Clearing token from local storage to force popup. This allows a user to select a different address
+        // by forcing the consent dialogue
+        clearTokenFromLocalStorage();
+      }
       const token = await authenticate(loginOptions);
       onSuccess(token);
     } catch (err) {
