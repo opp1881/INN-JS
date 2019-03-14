@@ -25,8 +25,7 @@ import innClient from '@opplysningen1881/inn-js';
 
 innClient.init({
     appName: 'Example app', // Name of the application registered through Opplysningen INN
-    mode: 'development', // Or production
-    requireConsent: true // Used for sharing user information with the given application
+    mode: 'development' // Or production
 });
 ```
 

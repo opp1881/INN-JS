@@ -40,8 +40,7 @@ describe('inn-js', () => {
   beforeAll(() => {
     innClient.init({
       appName: 'unittest',
-      mode: 'development',
-      requireConsent: false
+      mode: 'development'
     });
 
     mockOnSuccess = jest.fn();
