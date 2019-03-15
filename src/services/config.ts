@@ -14,14 +14,27 @@ export const getMode = (): Mode => config.mode;
 
 export const getAppName = (): string => config.appName;
 
-export const getProxyUrl = (): string =>
-  getMode() === Mode.DEV ? ProxyUrl.DEV : ProxyUrl.PROD;
+export const getProxyUrl = (): string => {
+  if (config.proxyUrl) {
+    return config.proxyUrl;
+  }
+  return getMode() === Mode.DEV ? ProxyUrl.DEV : ProxyUrl.PROD;
+}
 
-export const getBackgroundImageUrl = (): string =>
-  getMode() === Mode.DEV ? BackgroundImage.DEV : BackgroundImage.PROD;
 
-export const getProfileLink = (): string =>
-  getMode() === Mode.DEV ? ProfileLink.DEV : ProfileLink.PROD;
+export const getBackgroundImageUrl = (): string => {
+  if (config.profileBackgroundUrl) {
+    return config.profileBackgroundUrl;
+  }
+  return getMode() === Mode.DEV ? BackgroundImage.DEV : BackgroundImage.PROD;
+}
+
+export const getProfileLink = (): string => {
+  if (config.profileUrl) {
+    return config.profileUrl;
+  }
+  return getMode() === Mode.DEV ? ProfileLink.DEV : ProfileLink.PROD;
+}
 
 export const initConfig = (newConfig: IConfig = config): void => {
   const errors = verifyRequiredConfig(newConfig)
@@ -36,6 +49,9 @@ export const initConfig = (newConfig: IConfig = config): void => {
 
   config = {
     appName: newConfig.appName,
-    mode: newConfig.mode.toLowerCase()
+    mode: newConfig.mode.toLowerCase(),
+    profileUrl: newConfig.profileUrl,
+    profileBackgroundUrl: newConfig.profileBackgroundUrl,
+    proxyUrl: newConfig.proxyUrl
   };
 };

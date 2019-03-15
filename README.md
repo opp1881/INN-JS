@@ -28,6 +28,21 @@ innClient.init({
     mode: 'development' // Or production
 });
 ```
+### Override the INN environment URLs
+Usually the INN service URLs are decided based on the client `mode`.
+The URLs may be overriden through three optional configuration properties. See example below:
+```
+import innClient from '@opplysningen1881/inn-js';
+
+innClient.init({
+    appName: 'Example app', // Name of the application registered through Opplysningen INN
+    mode: 'development', // Or production
+    requireConsent: true, // Used for sharing user information with the given application
+    profileUrl: 'https://inn-override-sso.opplysningen.no/oidsso/js/inn/inn-background.png', // Overrides the default mode configuration
+    profileBackgroundUrl: 'https://inn-override-sso.opplysningen.no/oidsso/welcome', // Overrides the default mode configuration
+    proxyUrl: 'https://inn-override-spaproxy.opplysningen.no/proxy' // Overrides the default mode configuration
+});
+```
 
 ## Add the INN login button to your application
 
