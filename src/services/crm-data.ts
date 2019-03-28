@@ -13,6 +13,8 @@ const extractContactInfo = (crmData: ICrmDataResponse): IContactInfo => {
   const { contact } = crmData.deliveryaddress;
   return {
     emailAddress: contact.email,
+    firstName: crmData.firstName,
+    lastName: crmData.lastName,
     fullName: contact.name,
     phoneNumber: contact.phoneNumber
   };

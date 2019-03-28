@@ -5,6 +5,8 @@ export interface ICrmData {
 
 export interface IContactInfo {
   emailAddress: string;
+  firstName: string;
+  lastName: string;
   fullName: string;
   phoneNumber: string;
 }
