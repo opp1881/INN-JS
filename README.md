@@ -137,16 +137,12 @@ $ npm install
 Install Jest, then run with `npm test`.
 
 ```
-$ npm install -g jest
 $ npm test
 ```
 
 ## Build
 
-You'll need Microbundle and Rimraf to make a build.
-
 ```
-$ npm install -g microbundle rimraf
 $ npm run build
 ```
 
