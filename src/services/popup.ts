@@ -1,4 +1,7 @@
-import { getQueryParamValue } from '../utils/query';
+import { ICrmData } from '../types';
+import { getQueryParamValue, getAddressFromQuery } from '../utils/query';
+import { setCrmDataInSessionStorage } from '../utils/session-storage';
+import { areCrmDataFieldsEmpty } from './crm-data';
 import { initializeSession } from './request';
 import LoadingPage from '../components/LoadingPage';
 
@@ -47,7 +50,7 @@ function redirectPopup(
 function pollForLoginCompletion(
   popup: Window | null,
   isSecretProvisioned: boolean
-): Promise<string> {
+): Promise<[string | null, object | null]> {
   return new Promise((resolve, reject) => {
     const pollTimer = window.setInterval(() => {
       if (isLoginNotInProgress(popup)) {
@@ -56,27 +59,24 @@ function pollForLoginCompletion(
         try {
           if (popup && popup.location.href.indexOf(window.origin) !== -1) {
             window.clearInterval(pollTimer);
-
             if (isSecretProvisioned) {
               popup.close();
               resolve();
             } else {
               const { search } = popup!.location;
-
               popup.close();
               if (search) {
+                const crmDataFromSearchQuery = getAddressFromQuery(search);
                 const code = getQueryParamValue(search, 'code');
                 if (code) {
-                  resolve(code);
+                  resolve([code, crmDataFromSearchQuery]);
                 } else {
                   reject('Could not find required query params');
                 }
               }
             }
           }
-          /* tslint:disable */
-        } catch (e) {}
-        /* tslint:enable */
+        } catch (e) {} // tslint:disable-line
       }
     }, pollInterval);
   });
@@ -98,7 +98,14 @@ export default async function login(
     await pollForLoginCompletion(popup, true);
     return { appSecret: provisionedSecret, ssoLoginUUID: session.ssoLoginUUID };
   } else {
-    const appSecret = await pollForLoginCompletion(popup, false);
-    return { appSecret, ssoLoginUUID: session.ssoLoginUUID };
+    const [appSecret, crmData] = await pollForLoginCompletion(popup, false);
+    if (crmData !== null && !areCrmDataFieldsEmpty(crmData)) {
+      // User did not register, so we set the user contact info to be data from query params
+      setCrmDataInSessionStorage(crmData as ICrmData);
+    }
+    return {
+      appSecret: appSecret as string,
+      ssoLoginUUID: session.ssoLoginUUID
+    };
   }
 }

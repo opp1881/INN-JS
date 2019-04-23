@@ -7,12 +7,6 @@ const getUrl = (path: string): string =>
 const getHeaders = (headers: HeadersInit = {}): HeadersInit => {
   const token = getTokenFromLocalStorage();
   return headers;
-  // return token
-  //   ? {
-  //       ...headers,
-  //       Authorization: `Bearer ${token}`
-  //     }
-  //   : headers;
 };
 
 export const getAsJson = async (path: string): Promise<any> => {

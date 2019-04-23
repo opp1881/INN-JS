@@ -44,7 +44,9 @@ innClient.init({
 });
 ```
 
-## Add the INN login button to your application
+The library must also be allowed to work with your application through query params. This is used for when the user does not want to register, i.e. "Continue without registration". To enable this, go to [INN Self Service](https://inn-prod-ss.opplysningen.no/innss/) and add the application tag `ALLOWEDQUERYPARAMS` with value `code;firstName;lastName;streetAddress;emailAddress;phoneNumber;zipcode;additionalAddressInfo;Deliverytime;pickupPoint`.
+
+## Add login button to your application
 
 ```
 // HTML
