@@ -9,7 +9,8 @@ import {
   isTokenInLocalStorage,
   getTokenFromLocalStorage,
   setSecretInLocalStorage,
-  setTokenInLocalStorage
+  setTokenInLocalStorage,
+  clearTokenFromLocalStorage
 } from './utils/local-storage';
 import { fetchCrmData, exchangeForToken } from './services/request';
 import {
@@ -36,7 +37,7 @@ function noop(data?) {}
 export const getCrmData = async (): Promise<ICrmDataResponse> => {
   const token = getTokenFromLocalStorage();
   const crmDataFromSessionStorage = getCrmDataFromSessionStorage();
-  if (token) {
+  if (token && token !== 'undefined') {
     const decodedJwt = parseJWT(token);
     if (decodedJwt) {
       return fetchCrmData(decodedJwt.jti);
@@ -55,9 +56,7 @@ export const getCrmData = async (): Promise<ICrmDataResponse> => {
  * If the user is not authenticated, an empty string is returned.
  * In the case that the user does not wnat to register, this allows the app to then fetch CRM Data from session storage.
  */
-export const authenticate = async (
-  loginOptions: ILoginOptions
-): Promise<string> => {
+export const authenticate = async (loginOptions: ILoginOptions): Promise<string> => {
   if (isTokenInLocalStorage()) {
     return getTokenFromLocalStorage() as string;
   }
@@ -69,11 +68,10 @@ export const authenticate = async (
     const { appSecret, ssoLoginUUID } = await login(
       loginOptions.withUserCheckout
     );
-    const token = (await exchangeForToken(appSecret, ssoLoginUUID)) || '';
-    if (token !== '') {
-      setTokenInLocalStorage(token);
-      setSecretInLocalStorage(appSecret);
-    }
+    const token = await exchangeForToken(appSecret, ssoLoginUUID);
+
+    setTokenInLocalStorage(token);
+    setSecretInLocalStorage(appSecret);
     return token;
   } catch (err) {
     throw new Error(`Could not authenticate: ${err}`);
@@ -111,6 +109,11 @@ const initButton = (
   const button = addButtonTo(id, options);
   button.addEventListener('click', async () => {
     try {
+      if (loginOptions.withUserCheckout) {
+        // Clearing token from local storage to force popup. This allows a user to select a different address
+        // by forcing the consent dialogue
+        clearTokenFromLocalStorage();
+      }
       const token = await authenticate(loginOptions);
       onSuccess(token);
     } catch (err) {
