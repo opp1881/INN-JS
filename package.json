@@ -1,6 +1,6 @@
 {
   "name": "@opplysningen1881/inn-js",
-  "version": "1.1.3",
+  "version": "1.2.0",
   "main": "lib/inn-js.js",
   "source": "src/index.ts",
   "license": "Apache-2.0",
