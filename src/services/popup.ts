@@ -32,8 +32,8 @@ const windowFeatures = `left=${popupPosX},
 
 function openPopup(): Window {
   const popup = window.open('about:blank', 'innspaclient', windowFeatures);
-  if (popup) {
-    popup.document.body.appendChild(LoadingPage());
+  if (popup) {   
+	popup.document.body.innerHTML = LoadingPage();
     return popup;
   }
   throw new Error('Could not open login popup');

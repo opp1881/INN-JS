@@ -18,6 +18,7 @@ function getLoadingPageStyle(): string {
 `;
 }
 
+/*
 export default function LoadingPage(): HTMLElement {
   const div = document.createElement('div');
   div.setAttribute('class', 'intializing-container');
@@ -25,3 +26,13 @@ export default function LoadingPage(): HTMLElement {
   div.appendChild(document.createTextNode('Initializing session...'));
   return div;
 }
+*/
+
+export default function LoadingPage(): string {
+  const div = document.createElement('div');
+  div.setAttribute('class', 'intializing-container');
+  div.setAttribute('style', getLoadingPageStyle());
+  div.appendChild(document.createTextNode('Initializing session...'));
+  return "<div class='intializing-container' style='" + getLoadingPageStyle() + "'>Initializing session...</div>" ;
+}
+
